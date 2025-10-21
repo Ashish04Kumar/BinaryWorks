@@ -1,4 +1,4 @@
-"use client"; // mark as client component
+"use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import Cookies from "js-cookie";
@@ -14,6 +14,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setThemeState] = useState<ThemeMode>("light");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const setTheme = (newTheme: ThemeMode) => {
     setThemeState(newTheme);
@@ -24,16 +26,13 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const saved = localStorage.getItem("portfolio-theme") as ThemeMode | null;
-    if (saved) {
-      setThemeState(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    } else {
-      const cookieTheme = Cookies.get("portfolio-theme") as ThemeMode | undefined;
-      if (cookieTheme) {
-        setThemeState(cookieTheme);
-        document.documentElement.setAttribute("data-theme", cookieTheme);
-      }
-    }
+    const cookieTheme = Cookies.get("portfolio-theme") as ThemeMode | undefined;
+    
+    const initialTheme = saved || cookieTheme || "light";
+    
+    setThemeState(initialTheme);
+    document.documentElement.setAttribute("data-theme", initialTheme);
+    setIsInitialized(true);
   }, []);
 
   return (
