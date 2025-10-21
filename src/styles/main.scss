@@ -1,0 +1,147 @@
+@import "variables";
+@import "tailwindcss";
+
+.theme-bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.theme-bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.theme-bg-nav {
+  background-color: var(--bg-nav);
+}
+
+.theme-bg-card {
+  background-color: var(--bg-card);
+}
+
+.theme-bg-hover:hover {
+  background-color: var(--bg-hover);
+}
+
+.theme-bg-footer {
+  background-color: var(--bg-footer);
+}
+
+.theme-bg-accent {
+  background-color: var(--bg-accent);
+}
+
+.theme-text-primary {
+  color: var(--text-primary);
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+
+.theme-text-accent {
+  color: var(--text-accent);
+}
+
+.theme-border {
+  border-color: var(--border-color);
+}
+
+.theme-shadow {
+  box-shadow: 0 4px 6px -1px var(--shadow), 0 2px 4px -1px var(--shadow);
+}
+
+.theme-shadow-lg {
+  box-shadow: 0 10px 15px -3px var(--shadow-lg), 0 4px 6px -2px var(--shadow-lg);
+}
+
+[data-theme='retro'] .theme-logo {
+  text-shadow: 3px 3px 0px #f59e0b;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+}
+
+[data-theme='futuristic'] .theme-logo {
+  text-shadow: 0 0 10px var(--bg-accent), 0 0 20px var(--bg-accent);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 4px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+[data-theme='futuristic'] .theme-card-glow {
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), inset 0 0 20px rgba(0, 255, 65, 0.1);
+  border: 2px solid var(--border-color);
+  animation: pulse-border 3s ease-in-out infinite;
+}
+
+[data-theme='futuristic'] .scan-line {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme='futuristic'] .scan-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--bg-accent), transparent);
+  animation: scan 3s linear infinite;
+}
+
+[data-theme='retro'] .retro-border {
+  border: 4px solid var(--border-color);
+  box-shadow: 8px 8px 0px var(--bg-accent);
+}
+
+[data-theme='retro'] .retro-button {
+  border: 3px solid var(--text-primary);
+  box-shadow: 4px 4px 0px var(--text-primary);
+  transition: all 0.1s;
+}
+
+[data-theme='retro'] .retro-button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px var(--text-primary);
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px var(--bg-accent), 0 0 20px var(--bg-accent), 0 0 30px var(--bg-accent);
+  }
+  to {
+    text-shadow: 0 0 20px var(--bg-accent), 0 0 30px var(--bg-accent), 0 0 40px var(--bg-accent);
+  }
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), inset 0 0 20px rgba(0, 255, 65, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 255, 65, 0.5), inset 0 0 30px rgba(0, 255, 65, 0.2);
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--bg-accent), var(--text-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme='futuristic'] .gradient-text {
+  background: linear-gradient(135deg, #00ff41, #00ffff, #00ff41);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: glow 2s ease-in-out infinite alternate;
+}

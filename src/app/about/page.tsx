@@ -1,16 +1,15 @@
-"use client"
 import { BookOpen, Heart, Lightbulb, Target } from "lucide-react";
 import { ArrowRight, Code, Palette, Zap } from "lucide-react";
-import ashishImg1 from "../../public/assets/personal-images/image1.jpeg";
-import ashishImg2 from "../../public/assets/personal-images/image2.jpeg";
-import ashishImg3 from "../../public/assets/personal-images/image3.jpeg";
-import { useTheme } from "./providers/theme-provider";
+import ashishImg1 from "../../../public/assets/personal-images/image1.jpeg";
+import ashishImg2 from "../../../public/assets/personal-images/image2.jpeg";
+import ashishImg3 from "../../../public/assets/personal-images/image3.jpeg";
 import Link from "next/link";
-import SwiperContainer from "./components/SwiperContainer";
+import SwiperContainer from "../components/SwiperContainer";
+import { cookies } from "next/headers";
 
-const About = () => {
-  const { theme } = useTheme();
-
+const About = async () => {
+  const cookieStore = await cookies();
+  const theme = cookieStore.get("portfolio-theme")?.value || "light";
   const features = [
     {
       icon: <Code className="w-8 h-8" />,
