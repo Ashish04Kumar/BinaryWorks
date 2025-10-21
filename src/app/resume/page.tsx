@@ -1,10 +1,6 @@
 import { Briefcase, GraduationCap, Award, Download } from "lucide-react";
-import { cookies } from "next/headers";
 
-const Resume = async () => {
-  const cookieStore = await cookies();
-  const theme = cookieStore.get("portfolio-theme")?.value || "light";
-
+const Resume = () => {
   const experience = [
     {
       title: "Senior Full-Stack Developer",
@@ -78,19 +74,9 @@ const Resume = async () => {
   return (
     <div className="theme-bg-primary min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className={`mb-16 flex justify-between items-start ${
-            theme === "futuristic" ? "scan-line" : ""
-          }`}
-        >
+        <div className="mb-16 flex justify-between items-start scan-line">
           <div>
-            <h1
-              className={`text-5xl md:text-6xl font-bold mb-6 theme-text-primary ${
-                theme === "futuristic" || theme === "retro"
-                  ? "gradient-text"
-                  : ""
-              }`}
-            >
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 theme-text-primary gradient-text">
               Resume
             </h1>
             <p className="text-xl theme-text-secondary max-w-3xl">
@@ -98,11 +84,7 @@ const Resume = async () => {
               and certifications.
             </p>
           </div>
-          <button
-            className={`hidden md:flex items-center gap-2 px-6 py-3 rounded-lg theme-bg-accent theme-text-accent font-semibold transition-all duration-200 hover:scale-105 ${
-              theme === "retro" ? "retro-button" : ""
-            } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
-          >
+          <button className="hidden md:flex items-center gap-2 px-6 py-3 rounded-lg theme-bg-accent theme-text-accent font-semibold transition-all duration-200 hover:scale-105 retro-button theme-card-glow">
             <Download className="w-5 h-5" />
             Download PDF
           </button>
@@ -120,9 +102,7 @@ const Resume = async () => {
               {experience.map((job, index) => (
                 <div
                   key={index}
-                  className={`p-6 rounded-xl theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 ${
-                    theme === "retro" ? "retro-border" : ""
-                  } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+                  className="p-6 rounded-xl theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 retro-border theme-card-glow"
                 >
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
                     <div>
@@ -133,11 +113,7 @@ const Resume = async () => {
                         {job.company}
                       </p>
                     </div>
-                    <span
-                      className={`mt-2 md:mt-0 px-4 py-1 rounded-full text-sm font-semibold theme-bg-accent theme-text-accent ${
-                        theme === "retro" ? "border-2 theme-border" : ""
-                      }`}
-                    >
+                    <span className="mt-2 md:mt-0 px-4 py-1 rounded-full text-sm font-semibold theme-bg-accent theme-text-accent border-2 theme-border">
                       {job.period}
                     </span>
                   </div>
@@ -176,9 +152,7 @@ const Resume = async () => {
               {education.map((edu, index) => (
                 <div
                   key={index}
-                  className={`p-6 rounded-xl theme-bg-card theme-shadow ${
-                    theme === "retro" ? "retro-border" : ""
-                  } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+                  className="p-6 rounded-xl theme-bg-card theme-shadow retro-border theme-card-glow"
                 >
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3">
                     <div>
@@ -189,11 +163,7 @@ const Resume = async () => {
                         {edu.institution}
                       </p>
                     </div>
-                    <span
-                      className={`mt-2 md:mt-0 px-4 py-1 rounded-full text-sm font-semibold theme-bg-accent theme-text-accent ${
-                        theme === "retro" ? "border-2 theme-border" : ""
-                      }`}
-                    >
+                    <span className="mt-2 md:mt-0 px-4 py-1 rounded-full text-sm font-semibold theme-bg-accent theme-text-accent border-2 theme-border">
                       {edu.period}
                     </span>
                   </div>
@@ -214,9 +184,7 @@ const Resume = async () => {
               {certifications.map((cert, index) => (
                 <div
                   key={index}
-                  className={`p-6 rounded-xl theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-105 ${
-                    theme === "retro" ? "retro-border" : ""
-                  } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+                  className="p-6 rounded-xl theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 retro-border theme-card-glow"
                 >
                   <h3 className="text-lg font-bold theme-text-primary mb-2">
                     {cert.name}
@@ -224,11 +192,7 @@ const Resume = async () => {
                   <p className="theme-text-secondary text-sm mb-2">
                     {cert.issuer}
                   </p>
-                  <span
-                    className={`inline-block px-3 py-1 rounded-full text-sm theme-bg-accent theme-text-accent ${
-                      theme === "retro" ? "border-2 theme-border" : ""
-                    }`}
-                  >
+                  <span className="inline-block px-3 py-1 rounded-full text-sm theme-bg-accent theme-text-accent border-2 theme-border">
                     {cert.year}
                   </span>
                 </div>
@@ -237,11 +201,7 @@ const Resume = async () => {
           </section>
         </div>
 
-        <button
-          className={`md:hidden mt-12 w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg theme-bg-accent theme-text-accent font-semibold transition-all duration-200 ${
-            theme === "retro" ? "retro-button" : ""
-          } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
-        >
+        <button className="md:hidden mt-12 w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg theme-bg-accent theme-text-accent font-semibold transition-all duration-200 retro-button theme-card-glow">
           <Download className="w-5 h-5" />
           Download PDF
         </button>

@@ -2,7 +2,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Github, ExternalLink } from "lucide-react";
-import { cookies } from "next/headers";
 import ProjectModal from "../components/ProjectModal";
 
 type ReadMoreSlide = { img: string; desc: string };
@@ -18,12 +17,8 @@ type ProjectItem = {
   readMore?: ReadMoreSlide[];
 };
 
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Projects = async ({ searchParams }: any) => {
-  const cookieStore = await cookies();
-  const theme = cookieStore.get("portfolio-theme")?.value || "light";
-
+const Projects = ({ searchParams }: any) => {
   const filter = searchParams?.filter || "all";
   const selectedProjectTitle = searchParams?.project;
 
@@ -308,11 +303,9 @@ const Projects = async ({ searchParams }: any) => {
     <div className="theme-bg-primary min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className={`mb-10 ${theme === "futuristic" ? "scan-line" : ""}`}>
+        <div className={`mb-10  scan-line`}>
           <h1
-            className={`text-5xl md:text-6xl font-bold mb-4 theme-text-primary ${
-              theme === "futuristic" || theme === "retro" ? "gradient-text" : ""
-            }`}
+            className={`text-5xl md:text-6xl font-bold mb-4 theme-text-primary gradient-text`}
           >
             Projects
           </h1>
@@ -328,12 +321,10 @@ const Projects = async ({ searchParams }: any) => {
             <Link
               key={btn}
               href={`?filter=${btn}`}
-              className={`px-5 py-2 rounded-lg text-lg font-medium transition-all duration-200 border theme-border ${
+              className={`px-5 py-2 rounded-lg text-lg font-medium transition-all duration-200 border theme-border retro-button theme-card-glow ${
                 filter === btn
                   ? "theme-bg-accent theme-text-accent"
                   : "theme-text-primary hover:theme-bg-hover"
-              } ${theme === "retro" ? "retro-button" : ""} ${
-                theme === "futuristic" ? "theme-card-glow" : ""
               }`}
             >
               {btn === "all"
@@ -350,9 +341,7 @@ const Projects = async ({ searchParams }: any) => {
           {filteredProjects.map((project, index) => (
             <div
               key={index}
-              className={`rounded-xl overflow-hidden theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-[1.02] ${
-                theme === "retro" ? "retro-border" : ""
-              } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+              className={`retro-border theme-card-glow rounded-xl overflow-hidden theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-[1.02]`}
             >
               <div className="relative h-72 overflow-hidden">
                 <Image
@@ -381,9 +370,7 @@ const Projects = async ({ searchParams }: any) => {
                   {project.tech.map((tech, techIndex) => (
                     <span
                       key={techIndex}
-                      className={`px-3 py-1 rounded-full text-sm theme-bg-accent theme-text-accent ${
-                        theme === "retro" ? "border-2 theme-border" : ""
-                      }`}
+                      className={`px-3 py-1 rounded-full text-sm theme-bg-accent theme-text-accent theme-border`}
                     >
                       {tech}
                     </span>
@@ -396,9 +383,7 @@ const Projects = async ({ searchParams }: any) => {
                       project.title
                     )}`}
                     scroll={false}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 shadow-md transform hover:scale-[1.02] ${
-                      theme === "retro" ? "retro-button" : ""
-                    }`}
+                    className={`retro-button flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 shadow-md transform hover:scale-[1.02] `}
                     style={{
                       background:
                         "linear-gradient(90deg, #fb923c 0%, #f97316 100%)",
@@ -416,9 +401,7 @@ const Projects = async ({ searchParams }: any) => {
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg theme-text-primary border theme-border hover:theme-bg-hover transition-all duration-200 ${
-                        theme === "retro" ? "retro-button" : ""
-                      }`}
+                      className={`retro-button flex items-center gap-2 px-4 py-2 rounded-lg theme-text-primary border theme-border hover:theme-bg-hover transition-all duration-200 `}
                     >
                       <Github className="w-4 h-4" />
                       Code
@@ -427,9 +410,7 @@ const Projects = async ({ searchParams }: any) => {
                       href={project.live}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg theme-bg-accent theme-text-accent transition-all duration-200 hover:scale-105 ${
-                        theme === "retro" ? "retro-button" : ""
-                      } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+                      className={`retro-button theme-card-glow flex items-center gap-2 px-4 py-2 rounded-lg theme-bg-accent theme-text-accent transition-all duration-200 hover:scale-105 `}
                     >
                       <ExternalLink className="w-4 h-4" />
                       Live Demo

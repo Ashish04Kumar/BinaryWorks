@@ -5,11 +5,8 @@ import ashishImg2 from "../../../public/assets/personal-images/image2.jpeg";
 import ashishImg3 from "../../../public/assets/personal-images/image3.jpeg";
 import Link from "next/link";
 import SwiperContainer from "../components/SwiperContainer";
-import { cookies } from "next/headers";
 
-const About = async () => {
-  const cookieStore = await cookies();
-  const theme = cookieStore.get("portfolio-theme")?.value || "light";
+const About =  () => {
   const features = [
     {
       icon: <Code className="w-8 h-8" />,
@@ -122,18 +119,12 @@ const About = async () => {
   return (
     <div className="theme-bg-primary min-h-screen">
       <section
-        className={`relative py-20 lg:py-32 theme-bg-secondary ${
-          theme === "futuristic" ? "scan-line" : ""
-        }`}
+        className={`relative py-20 lg:py-32 theme-bg-secondary scan-line `}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1
-              className={`text-5xl md:text-7xl font-bold mb-6 theme-text-primary ${
-                theme === "futuristic" || theme === "retro"
-                  ? "gradient-text"
-                  : ""
-              }`}
+              className={`text-5xl md:text-7xl font-bold mb-6 theme-text-primary  gradient-text`}
             >
               Hi, I'm Ashish Kumar
             </h1>
@@ -177,17 +168,13 @@ const About = async () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/projects"
-                    className={`px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-bg-accent theme-text-accent shadow-lg hover:shadow-xl ${
-                      theme === "retro" ? "retro-button" : ""
-                    } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+                    className={`retro-button theme-card-glow px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-bg-accent theme-text-accent shadow-lg hover:shadow-xl`}
                   >
                     View My Work
                   </Link>
                   <Link
                     href="/contact"
-                    className={`px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-text-primary border-2 theme-border hover:theme-bg-hover ${
-                      theme === "retro" ? "retro-button" : ""
-                    }`}
+                    className={`retro-button px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-text-primary border-2 theme-border hover:theme-bg-hover`}
                   >
                     Get In Touch
                   </Link>
@@ -207,9 +194,7 @@ const About = async () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className={`p-8 rounded-xl theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-105 ${
-                  theme === "retro" ? "retro-border" : ""
-                } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+                className="p-8 rounded-xl theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-105 retro-border theme-card-glow"
               >
                 <div className="theme-text-primary mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-bold mb-3 theme-text-primary">
@@ -233,9 +218,7 @@ const About = async () => {
           </p>
           <Link
             href="/contact"
-            className={`inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-bg-accent theme-text-accent shadow-lg ${
-              theme === "retro" ? "retro-button" : ""
-            } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+            className={`retro-button theme-card-glow inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-bg-accent theme-text-accent shadow-lg `}
           >
             Start a Conversation
             <ArrowRight className="w-5 h-5" />
@@ -244,11 +227,9 @@ const About = async () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
-        <div className={`mb-20 ${theme === "futuristic" ? "scan-line" : ""}`}>
+        <div className={`mb-20 scan-line`}>
           <h1
-            className={`text-5xl md:text-6xl font-bold mb-6 theme-text-primary ${
-              theme === "futuristic" || theme === "retro" ? "gradient-text" : ""
-            }`}
+            className={`text-5xl md:text-6xl font-bold mb-6 theme-text-primary  gradient-text`}
           >
             About Me
           </h1>
@@ -269,11 +250,7 @@ const About = async () => {
                 environments where innovation meets practical problem-solving.
               </p>
             </div>
-            <div
-              className={`p-8 rounded-xl theme-bg-card theme-shadow-lg ${
-                theme === "retro" ? "retro-border" : ""
-              } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
-            >
+            <div className="p-8 rounded-xl theme-bg-card theme-shadow-lg retro-border theme-card-glow">
               <h3 className="text-2xl font-bold mb-4 theme-text-primary">
                 Quick Facts
               </h3>
@@ -309,11 +286,7 @@ const About = async () => {
             {myJourney.map((value, index) => (
               <div
                 key={index}
-                className={`mt-14 p-6 rounded-xl theme-bg-card 
-    ${theme === "retro" ? "retro-border" : ""} 
-    ${theme === "futuristic" ? "theme-card-glow" : ""} 
-    ${theme === "dark" ? "theme-shadow" : "theme-shadow border border-gray-200"}
-  `}
+                className="mt-14 p-6 rounded-xl theme-bg-card retro-border theme-card-glow theme-shadow border border-gray-200"
               >
                 <h3 className="text-lg font-bold mb-2 theme-text-primary">
                   {/* {value.title} */}
@@ -335,9 +308,7 @@ const About = async () => {
             {values.map((value, index) => (
               <div
                 key={index}
-                className={`p-6 rounded-xl theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-105 ${
-                  theme === "retro" ? "retro-border" : ""
-                } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+                className="p-6 rounded-xl theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-105 retro-border theme-card-glow"
               >
                 <div className="theme-text-primary mb-3">{value.icon}</div>
                 <h3 className="text-lg font-bold mb-2 theme-text-primary">
@@ -363,9 +334,7 @@ const About = async () => {
             {skills.map((skillSet, index) => (
               <div
                 key={index}
-                className={`p-6 rounded-xl theme-bg-card theme-shadow ${
-                  theme === "retro" ? "retro-border" : ""
-                } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
+                className="p-6 rounded-xl theme-bg-card theme-shadow retro-border theme-card-glow"
               >
                 <h3 className="text-xl font-bold mb-4 theme-text-primary">
                   {skillSet.category}

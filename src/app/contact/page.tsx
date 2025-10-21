@@ -1,18 +1,12 @@
-import { cookies } from "next/headers";
 import ContactForm from "../components/ContactForm";
 
-const Contact = async () => {
-  const cookieStore = await cookies();
-  const theme = cookieStore.get("portfolio-theme")?.value || "light";
-
+const Contact = () => {
   return (
     <div className="theme-bg-primary min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={`mb-16 ${theme === "futuristic" ? "scan-line" : ""}`}>
+        <div className={`scan-line mb-16`}>
           <h1
-            className={`text-5xl md:text-6xl font-bold mb-6 theme-text-primary ${
-              theme === "futuristic" || theme === "retro" ? "gradient-text" : ""
-            }`}
+            className={`text-5xl md:text-6xl font-bold mb-6 theme-text-primary gradient-text`}
           >
             Get In Touch
           </h1>

@@ -41,9 +41,7 @@
   color: var(--text-accent);
 }
 
-.theme-border {
-  border-color: var(--border-color);
-}
+
 
 .theme-shadow {
   box-shadow: 0 4px 6px -1px var(--shadow), 0 2px 4px -1px var(--shadow);
@@ -51,6 +49,14 @@
 
 .theme-shadow-lg {
   box-shadow: 0 10px 15px -3px var(--shadow-lg), 0 4px 6px -2px var(--shadow-lg);
+}
+
+.theme-border {
+    border-color: var(--border-color);
+}
+
+[data-theme='retro'] .theme-border {
+  border: 2px solid var(--border-color);
 }
 
 [data-theme='retro'] .theme-logo {
@@ -108,15 +114,19 @@
   from {
     text-shadow: 0 0 10px var(--bg-accent), 0 0 20px var(--bg-accent), 0 0 30px var(--bg-accent);
   }
+
   to {
     text-shadow: 0 0 20px var(--bg-accent), 0 0 30px var(--bg-accent), 0 0 40px var(--bg-accent);
   }
 }
 
 @keyframes pulse-border {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), inset 0 0 20px rgba(0, 255, 65, 0.1);
   }
+
   50% {
     box-shadow: 0 0 40px rgba(0, 255, 65, 0.5), inset 0 0 30px rgba(0, 255, 65, 0.2);
   }
@@ -126,6 +136,7 @@
   0% {
     transform: translateY(0);
   }
+
   100% {
     transform: translateY(100vh);
   }
