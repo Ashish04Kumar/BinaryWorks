@@ -316,7 +316,7 @@ const About = async () => {
   `}
               >
                 <h3 className="text-lg font-bold mb-2 theme-text-primary">
-                  {value.title}
+                  {/* {value.title} */}
                 </h3>
                 <p className="text-lg theme-text-secondary ">
                   {value.description}

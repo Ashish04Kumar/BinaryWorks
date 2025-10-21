@@ -18,11 +18,9 @@ type ProjectItem = {
   readMore?: ReadMoreSlide[];
 };
 
-interface ProjectsProps {
-  searchParams?: { filter?: string; project?: string };
-}
 
-const Projects = async ({ searchParams }: ProjectsProps) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Projects = async ({ searchParams }: any) => {
   const cookieStore = await cookies();
   const theme = cookieStore.get("portfolio-theme")?.value || "light";
 

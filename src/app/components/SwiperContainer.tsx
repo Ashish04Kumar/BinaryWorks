@@ -5,10 +5,10 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 
 type Slide = {
-  image: string;
+  image: string | StaticImageData;
   description?: string;
 };
 
