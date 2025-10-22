@@ -14,6 +14,10 @@
   --border-color: #e2e8f0;
   --shadow: rgba(0, 0, 0, 0.1);
   --shadow-lg: rgba(0, 0, 0, 0.15);
+  --readmore-btn: linear-gradient(90deg, #f97316 0%, #fb923c 100%);
+  --readmore-txt: #ffffff;
+
+
 }
 
 [data-theme='dark'] {
@@ -23,15 +27,19 @@
   --bg-card: #1e293b;
   --bg-hover: #334155;
   --bg-footer: #1e293b;
-  --bg-accent: #3b82f6;
+  --bg-accent: #2160c4;
 
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
+  --text-primary: #dde1e9;
+  --text-secondary: #dde1e9;
   --text-accent: #ffffff;
 
   --border-color: #334155;
   --shadow: rgba(0, 0, 0, 0.3);
   --shadow-lg: rgba(0, 0, 0, 0.5);
+  --readmore-btn: linear-gradient(90deg, #d97706 0%, #b45309 100%);
+  --readmore-txt: #ffffff;
+
+
 }
 
 [data-theme='retro'] {
@@ -50,6 +58,10 @@
   --border-color: #fbbf24;
   --shadow: rgba(245, 158, 11, 0.2);
   --shadow-lg: rgba(245, 158, 11, 0.3);
+  --readmore-btn: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+  --readmore-txt: #78350f;
+
+
 }
 
 [data-theme='futuristic'] {
@@ -68,4 +80,8 @@
   --border-color: #00ff41;
   --shadow: rgba(0, 255, 65, 0.2);
   --shadow-lg: rgba(0, 255, 65, 0.4);
+  --readmore-btn: linear-gradient(90deg, #00ff41 0%, #00d936 100%);
+  --readmore-txt: #000000;
+
+
 }

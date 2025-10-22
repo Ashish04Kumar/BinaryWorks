@@ -13,14 +13,18 @@ type ProjectItem = {
   image: string;
   category: "associated" | "my" | string;
   github?: string;
+  githubFrontend?: string;
+  githubBackend?: string;
   live?: string;
   readMore?: ReadMoreSlide[];
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Projects = ({ searchParams }: any) => {
-  const filter = searchParams?.filter || "all";
-  const selectedProjectTitle = searchParams?.project;
+interface ProjectsProps {
+  searchParams: { filter?: string; project?: string };
+}
+const Projects = async ({ searchParams }: ProjectsProps) => {
+  const filter = searchParams?.filter ?? "all";
+  const selectedProjectTitle = searchParams?.project ?? "";
 
   const projects: ProjectItem[] = [
     {
@@ -257,12 +261,41 @@ const Projects = ({ searchParams }: any) => {
     {
       title: "Bharat Sahayta Hub",
       description:
-        "A full-featured e-commerce solution with real-time inventory management, payment processing, and analytics dashboard. Built with scalability and performance in mind.",
-      tech: ["Next.js", "Node.js", "Mongo DB", "TypeScript", "Mongoose", "JWT"],
-      image: "/assets/projects/associated/bharat-sahayta-hub/cover-image.png",
-      github: "https://github.com",
+        "<p>From emergency SOS alerts to crowdfunding, food assistance, and medical aid — this <strong>multilingual(currently 5 lang supported)</strong> platform connects people in need with nearby helpers instantly through an <strong>interactive map</strong>.</p><p>Users can post verified help requests under specific categories with proper details, which are then displayed on the map in real time. Nearby users receive instant notifications about these requests and can <strong>choose to accept or reject</strong> them based on their ability to help.</p><p>It’s a seamless, location-based support network designed to bring <strong>people and compassion together — faster, smarter, and safer</strong>.</p>",
+      tech: [
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "Mongo DB",
+        "Mongoose",
+        "JWT",
+        "Cloudinary",
+      ],
+      image: "/assets/projects/personal/bharat-sahayta-hub/cover-image.png",
+      githubFrontend: "https://github.com/Ashish04Kumar/bharat-sahayta-hub",
+      githubBackend:
+        "https://github.com/Ashish04Kumar/bharat-sahayta-hub-backend",
       live: "https://example.com",
       category: "my",
+      readMore: [
+        {
+          img: "/assets/projects/personal/bharat-sahayta-hub/how-it-works.png",
+          desc: `<p>The platform operates through three interconnected roles — <strong>Individual Helpers</strong>, <strong>NGOs</strong>, and <strong>People Seeking Help</strong>. Helpers can view <strong>real-time requests</strong> on an interactive map and respond instantly, while NGOs manage large-scale initiatives such as <strong>bulk resource distribution</strong> and volunteer coordination. Those in need can post <strong>verified requests</strong> with proof and receive quick, location-based assistance. Together, these roles build a <strong>transparent and compassionate help network</strong> driven by trust, empathy, and real-time collaboration.</p>`,
+        },
+        {
+          img: "/assets/projects/personal/bharat-sahayta-hub/ecosystem.png",
+          desc: `<p>The Bharat Sahayta Hub ecosystem creates a <strong>three-way connection</strong> between helpers, organizations, and those seeking support. <strong>Individual Helpers</strong> can respond to emergency requests, provide food and medical aid, and verify their actions through photo/video proof. <strong>NGOs and Organizations</strong> amplify their impact by coordinating volunteers, distributing resources at scale, and managing community programs. <strong>People Seeking Help</strong> can send one-tap emergency SOS alerts, request specific assistance with verification, and launch crowdfunding campaigns for urgent needs.`,
+        },
+
+        {
+          img: "/assets/projects/personal/bharat-sahayta-hub/registration.png",
+          desc: `<p>The platform offers <strong>flexible registration options</strong> to accommodate different user needs. Users can register as an <strong>Individual Helper</strong> to provide assistance, a <strong>Help Seeker</strong> to request support, or choose a <strong>combined Helper + Seeker role</strong> to both give and receive help as needed. Additionally, <strong>NGOs and Organizations</strong> can register to operate at scale — running crowdfunding campaigns, organizing relief camps, and coordinating large-scale community assistance programs. This multi-role system ensures that everyone can participate in the network according to their unique capacity and circumstances, creating a <strong>truly inclusive support ecosystem</strong>.</p>`,
+        },
+        {
+          img: "/assets/projects/personal/bharat-sahayta-hub/dashboard-screen.png",
+          desc: `<p>The dashboard serves as the <strong>central hub</strong> for all user activities on the platform. Currently, the project is a <strong>work in progress</strong> with a fully implemented authentication flow, allowing users to securely register, log in, and manage their profiles. As development continues, the dashboard will be enhanced with additional features including <strong>real-time help request tracking</strong>, interactive map integration, notification management, request history, impact analytics, and role-specific tools for helpers, seekers, and NGOs.</p>`,
+        },
+      ],
     },
     {
       title: "Zydoc: Online Doctor Appointment Booking App",
@@ -278,17 +311,27 @@ const Projects = ({ searchParams }: any) => {
         "Cloudinary",
       ],
       image: "/assets/projects/associated/zydoc/cover-image.png",
-      github: "https://github.com",
+      githubFrontend: "https://example.com",
+      githubBackend: "https://example.com",
       live: "https://example.com",
       category: "my",
     },
     {
-      title: "Bharat Sahayta Hub",
+      title: "Course Purchase Website",
       description:
         "A full-featured e-commerce solution with real-time inventory management, payment processing, and analytics dashboard. Built with scalability and performance in mind.",
-      tech: ["Next.js", "Node.js", "Mongo DB", "Mongoose", "JWT"],
-      image: "/assets/projects/associated/bharat-sahayta-hub/cover-image.png",
-      github: "https://github.com",
+      tech: [
+        "Next.js",
+        "Node.js",
+        "Mongo DB",
+        "Mongoose",
+        "JWT",
+        "Stripe Payment Gateway",
+        "Cloudinary",
+      ],
+      image: "/assets/projects/associated/zydoc/cover-image.png",
+      githubFrontend: "https://github.com",
+      githubBackend: "https://github.com",
       live: "https://example.com",
       category: "my",
     },
@@ -341,7 +384,7 @@ const Projects = ({ searchParams }: any) => {
           {filteredProjects.map((project, index) => (
             <div
               key={index}
-              className={`retro-border theme-card-glow rounded-xl overflow-hidden theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-[1.02]`}
+              className={`retro-border theme-card-glow rounded-xl overflow-hidden theme-bg-card theme-shadow hover:theme-shadow-lg transition-all duration-300 hover:scale-[1.02] flex flex-col`}
             >
               <div className="relative h-72 overflow-hidden">
                 <Image
@@ -356,13 +399,13 @@ const Projects = ({ searchParams }: any) => {
                   height={300}
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-1">
                 <h3 className="text-2xl font-bold mb-3 theme-text-primary">
                   {project.title}
                 </h3>
 
                 <div
-                  className="theme-text-secondary mb-4 leading-relaxed"
+                  className="theme-text-secondary mb-4 leading-relaxed flex-1"
                   dangerouslySetInnerHTML={{ __html: project.description }}
                 />
 
@@ -370,51 +413,82 @@ const Projects = ({ searchParams }: any) => {
                   {project.tech.map((tech, techIndex) => (
                     <span
                       key={techIndex}
-                      className={`px-3 py-1 rounded-full text-sm theme-bg-accent theme-text-accent theme-border`}
+                      className={`pills-color px-3 py-1 rounded-full text-sm theme-bg-accent theme-text-accent theme-border`}
                     >
                       {tech}
                     </span>
                   ))}
                 </div>
 
-                {project.readMore && (
-                  <Link
-                    href={`?filter=${filter}&project=${encodeURIComponent(
-                      project.title
-                    )}`}
-                    scroll={false}
-                    className={`retro-button flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 shadow-md transform hover:scale-[1.02] `}
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #fb923c 0%, #f97316 100%)",
-                      color: "white",
-                      width: "fit-content",
-                    }}
-                  >
-                    Read More
-                  </Link>
-                )}
+                {/* Buttons Section */}
+                {(project.readMore ||
+                  project.github ||
+                  project.githubFrontend ||
+                  project.githubBackend ||
+                  project.live) && (
+                  <div className="mt-auto flex flex-wrap gap-3">
+                    {project.readMore && (
+                      <Link
+                        href={`?filter=${filter}&project=${encodeURIComponent(
+                          project.title
+                        )}`}
+                        scroll={false}
+                        className={`read-more-btn retro-button flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 shadow-md transform hover:scale-[1.02] `}
+                        style={{
+                          width: "fit-content",
+                        }}
+                      >
+                        Read More
+                      </Link>
+                    )}
 
-                {project.github && project.live && (
-                  <div className="flex gap-4 mt-3">
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`retro-button flex items-center gap-2 px-4 py-2 rounded-lg theme-text-primary border theme-border hover:theme-bg-hover transition-all duration-200 `}
-                    >
-                      <Github className="w-4 h-4" />
-                      Code
-                    </a>
-                    <a
-                      href={project.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`retro-button theme-card-glow flex items-center gap-2 px-4 py-2 rounded-lg theme-bg-accent theme-text-accent transition-all duration-200 hover:scale-105 `}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      Live Demo
-                    </a>
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`retro-button flex items-center gap-2 px-4 py-2 rounded-lg theme-text-primary border theme-border hover:theme-bg-hover transition-all duration-200 `}
+                      >
+                        <Github className="w-4 h-4" />
+                        Code
+                      </a>
+                    )}
+
+                    {project.githubFrontend && (
+                      <a
+                        href={project.githubFrontend}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`retro-button flex items-center gap-2 px-4 py-2 rounded-lg theme-text-primary border theme-border hover:theme-bg-hover transition-all duration-200 `}
+                      >
+                        <Github className="w-4 h-4" />
+                        Frontend
+                      </a>
+                    )}
+
+                    {project.githubBackend && (
+                      <a
+                        href={project.githubBackend}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`retro-button flex items-center gap-2 px-4 py-2 rounded-lg theme-text-primary border theme-border hover:theme-bg-hover transition-all duration-200 `}
+                      >
+                        <Github className="w-4 h-4" />
+                        Backend
+                      </a>
+                    )}
+
+                    {project.live && (
+                      <a
+                        href={project.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`retro-button theme-card-glow flex items-center gap-2 px-4 py-2 rounded-lg theme-bg-accent theme-text-accent transition-all duration-200 hover:scale-105 `}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Live Demo
+                      </a>
+                    )}
                   </div>
                 )}
               </div>
