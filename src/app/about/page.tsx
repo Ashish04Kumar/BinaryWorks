@@ -6,7 +6,7 @@ import ashishImg3 from "../../../public/assets/personal-images/image3.jpeg";
 import Link from "next/link";
 import SwiperContainer from "../components/SwiperContainer";
 
-const About =  () => {
+const About = () => {
   const features = [
     {
       icon: <Code className="w-8 h-8" />,
@@ -62,7 +62,7 @@ const About =  () => {
       companyLogo: "",
       companyName: "Cognizant Technology Solutions",
       description:
-        "I believe in setting clear objectives and delivering results that exceed expectations.",
+        "Completed internship gaining hands-on experience with databases, data warehouses, and ETL processes using Informatica PowerCenter.",
     },
     {
       year: "2022-2025",
@@ -70,7 +70,7 @@ const About =  () => {
       companyLogo: "",
       companyName: "Sterlite Technologies",
       description:
-        "Constantly exploring new technologies and methodologies to solve problems creatively.",
+        "Worked as a Full Stack Java Developer as Graduate Engineer Trainee, mastering Core Java, Spring Boot, and MySQL while collaborating on a library management software project.",
     },
     {
       year: "2022-2025",
@@ -78,7 +78,7 @@ const About =  () => {
       companyLogo: "",
       companyName: "Two Dots",
       description:
-        "Deeply passionate about creating software that makes a positive impact on people's lives.",
+        "Built an agriculture-related IOT irrigation service, developing the frontend with vanilla JS and backend with Node.js.",
     },
     {
       year: "2022-2025",
@@ -86,7 +86,7 @@ const About =  () => {
       companyLogo: "",
       companyName: "Bombay Softwares",
       description:
-        "Committed to staying current with industry trends and expanding my skill set.",
+        "Developed and maintained web applications using React.js, Next.js and Node.js collaborating with cross-functional teams to deliver responsive products.",
     },
   ];
 
@@ -277,28 +277,34 @@ const About =  () => {
         </div>
       </div>
 
-      <div className="py-20  theme-bg-secondary">
+      <div className="py-20 theme-bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold mb-12 theme-text-primary text-center">
             My Journey
           </h2>
-          <div>
-            {myJourney.map((value, index) => (
+          <div className="space-y-10">
+            {myJourney.map((item, index) => (
               <div
                 key={index}
-                className="mt-14 p-6 rounded-xl theme-bg-card retro-border theme-card-glow theme-shadow border border-gray-200"
+                className="flex flex-col gap-1 p-6 rounded-xl bg-card retro-border theme-card-glow theme-shadow border"
               >
-                <h3 className="text-lg font-bold mb-2 theme-text-primary">
-                  {/* {value.title} */}
+                <p className="text-sm font-semibold theme-text-secondary mb-1">{item.year}</p>
+
+                <h3 className="text-lg font-bold theme-text-primary">
+                  {item.designation}
                 </h3>
-                <p className="text-lg theme-text-secondary ">
-                  {value.description}
+                <h3 className="text-md font-medium mb-2 theme-text-primary">
+                  {item.companyName}
+                </h3>
+                <p className="text-lg theme-text-secondary">
+                  {item.description}
                 </p>
               </div>
             ))}
           </div>
         </div>
       </div>
+
       <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
         <div className="mb-20">
           <h2 className="text-4xl font-bold mb-12 theme-text-primary text-center">

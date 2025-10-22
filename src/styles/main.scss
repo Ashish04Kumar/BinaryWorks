@@ -41,24 +41,42 @@
   color: var(--text-accent);
 }
 
+.read-more-btn {
+  background: var(--readmore-btn);
+  color: var(--readmore-txt);
+}
+
 
 
 .theme-shadow {
-  box-shadow: 0 4px 6px -1px var(--shadow), 0 2px 4px -1px var(--shadow);
+  box-shadow: 0 4px 6px -1px var(--shadow), 0 -3px 5px -1px var(--shadow);
 }
 
 .theme-shadow-lg {
-  box-shadow: 0 10px 15px -3px var(--shadow-lg), 0 4px 6px -2px var(--shadow-lg);
+  box-shadow: 0 10px 15px -3px var(--shadow-lg), 0 -3px 6px -2px var(--shadow-lg);
 }
 
 .theme-border {
-    border-color: var(--border-color);
+  border-color: var(--border-color);
 }
 
 [data-theme='retro'] .theme-border {
   border: 2px solid var(--border-color);
 }
+[data-theme='dark'] .bg-card {
+  background-color: #0F172A;
+  border: none;
+}
 
+[data-theme='light'] .bg-card {
+  border: none;
+  background-color: #ffffff;
+
+}
+[data-theme='retro'] .bg-card {
+  background-color: #FEF3C7;
+
+}
 [data-theme='retro'] .theme-logo {
   text-shadow: 3px 3px 0px #f59e0b;
   font-family: 'Courier New', monospace;
@@ -103,6 +121,7 @@
   border: 3px solid var(--text-primary);
   box-shadow: 4px 4px 0px var(--text-primary);
   transition: all 0.1s;
+  color: #78350f;
 }
 
 [data-theme='retro'] .retro-button:hover {
