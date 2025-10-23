@@ -101,7 +101,7 @@ const resumeData = {
 function Resume() {
   return (
     <div className="theme-bg-primary min-h-screen scan-line px-4 sm:px-6 lg:px-8 relative py-16 sm:py-16 lg:py-32">
-      <section className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8 rounded-xl theme-bg-card theme-shadow resume-border theme-card-glow theme-retro-resume">
+      <section className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8 rounded-xl theme-bg-card theme-shadow resume-border theme-card-glow theme-retro-resume retro-border">
         {/* Header */}
 
         {/* Personal Info */}

@@ -16,6 +16,8 @@ type ProjectItem = {
   githubFrontend?: string;
   githubBackend?: string;
   live?: string;
+  liveAdmin?: string;
+  liveClient?: string;
   readMore?: ReadMoreSlide[];
 };
 
@@ -308,11 +310,31 @@ const Projects = async ({ searchParams }: any) => {
         "Razorpay Payment Gateway",
         "Cloudinary",
       ],
-      image: "/assets/projects/associated/zydoc/cover-image.png",
-      githubFrontend: "https://example.com",
-      githubBackend: "https://example.com",
-      live: "https://example.com",
+      image: "/assets/projects/personal/zydoc/cover-image.png",
+      githubFrontend: "https://github.com/Ashish04Kumar/zydoc-frontend",
+      githubBackend: "https://github.com/Ashish04Kumar/zydoc-backend",
+      liveAdmin: "https://zydoc-admin-panel-frontend.vercel.app",
+      liveClient: "https://zydoc-frontend.vercel.app",
       category: "my",
+      readMore: [
+        {
+          img: "/assets/projects/personal/bharat-sahayta-hub/how-it-works.png",
+          desc: `<p>The platform operates through three interconnected roles — <strong>Individual Helpers</strong>, <strong>NGOs</strong>, and <strong>People Seeking Help</strong>. Helpers can view <strong>real-time requests</strong> on an interactive map and respond instantly, while NGOs manage large-scale initiatives such as <strong>bulk resource distribution</strong> and volunteer coordination. Those in need can post <strong>verified requests</strong> with proof and receive quick, location-based assistance. Together, these roles build a <strong>transparent and compassionate help network</strong> driven by trust, empathy, and real-time collaboration.</p>`,
+        },
+        {
+          img: "/assets/projects/personal/bharat-sahayta-hub/ecosystem.png",
+          desc: `<p>The Bharat Sahayta Hub ecosystem creates a <strong>three-way connection</strong> between helpers, organizations, and those seeking support. <strong>Individual Helpers</strong> can respond to emergency requests, provide food and medical aid, and verify their actions through photo/video proof. <strong>NGOs and Organizations</strong> amplify their impact by coordinating volunteers, distributing resources at scale, and managing community programs. <strong>People Seeking Help</strong> can send one-tap emergency SOS alerts, request specific assistance with verification, and launch crowdfunding campaigns for urgent needs.`,
+        },
+
+        {
+          img: "/assets/projects/personal/bharat-sahayta-hub/registration.png",
+          desc: `<p>The platform offers <strong>flexible registration options</strong> to accommodate different user needs. Users can register as an <strong>Individual Helper</strong> to provide assistance, a <strong>Help Seeker</strong> to request support, or choose a <strong>combined Helper + Seeker role</strong> to both give and receive help as needed. Additionally, <strong>NGOs and Organizations</strong> can register to operate at scale — running crowdfunding campaigns, organizing relief camps, and coordinating large-scale community assistance programs. This multi-role system ensures that everyone can participate in the network according to their unique capacity and circumstances, creating a <strong>truly inclusive support ecosystem</strong>.</p>`,
+        },
+        {
+          img: "/assets/projects/personal/bharat-sahayta-hub/dashboard-screen.png",
+          desc: `<p>The dashboard serves as the <strong>central hub</strong> for all user activities on the platform. Currently, the project is a <strong>work in progress</strong> with a fully implemented authentication flow, allowing users to securely register, log in, and manage their profiles. As development continues, the dashboard will be enhanced with additional features including <strong>real-time help request tracking</strong>, interactive map integration, notification management, request history, impact analytics, and role-specific tools for helpers, seekers, and NGOs.</p>`,
+        },
+      ],
     },
     {
       title: "Course Purchase Website",
@@ -419,11 +441,14 @@ const Projects = async ({ searchParams }: any) => {
                 </div>
 
                 {/* Buttons Section */}
+                {/* Buttons Section */}
                 {(project.readMore ||
                   project.github ||
                   project.githubFrontend ||
                   project.githubBackend ||
-                  project.live) && (
+                  project.live ||
+                  project.liveAdmin ||
+                  project.liveClient) && (
                   <div className="mt-auto flex flex-wrap gap-3">
                     {project.readMore && (
                       <Link
@@ -485,6 +510,30 @@ const Projects = async ({ searchParams }: any) => {
                       >
                         <ExternalLink className="w-4 h-4" />
                         Live Demo
+                      </a>
+                    )}
+
+                    {project.liveAdmin && (
+                      <a
+                        href={project.liveAdmin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`retro-button theme-card-glow flex items-center gap-2 px-4 py-2 rounded-lg theme-bg-accent theme-text-accent transition-all duration-200 `}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Live Admin
+                      </a>
+                    )}
+
+                    {project.liveClient && (
+                      <a
+                        href={project.liveClient}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`retro-button theme-card-glow flex items-center gap-2 px-4 py-2 rounded-lg theme-bg-accent theme-text-accent transition-all duration-200 `}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Live Client
                       </a>
                     )}
                   </div>
