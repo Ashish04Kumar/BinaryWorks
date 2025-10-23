@@ -111,7 +111,7 @@ const About = () => {
       items: ["MongoDB", "Mongoose"],
     },
     {
-      category: "DevOps / Deployment",
+      category: "Version Control / Deployment",
       items: ["Vercel / Netlify (frontend deployment)", "Git & GitHub"],
     },
   ];
@@ -119,7 +119,7 @@ const About = () => {
   return (
     <div className="theme-bg-primary min-h-screen">
       <section
-        className={`relative py-20 lg:py-32 theme-bg-secondary scan-line `}
+        className={`relative py-16 md:py-32 theme-bg-secondary scan-line `}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -165,16 +165,16 @@ const About = () => {
                   design trends. I believe the best work comes from a balanced
                   life and diverse experiences.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-row sm:flex-row gap-4 md:justify-center justify-between">
                   <Link
                     href="/projects"
-                    className={`retro-button theme-card-glow px-8 py-4 rounded-lg font-semibold transition-all duration-200 theme-bg-accent theme-text-accent shadow-lg hover:shadow-xl`}
+                    className={`retro-button theme-card-glow p-3 md:px-8 md:py-4 rounded-lg font-semibold transition-all duration-200 theme-bg-accent theme-text-accent shadow-lg hover:shadow-xl`}
                   >
                     View My Work
                   </Link>
                   <Link
                     href="/contact"
-                    className={`retro-button px-8 py-4 rounded-lg font-semibold transition-all duration-200  theme-text-primary border-2 theme-border hover:theme-bg-hover`}
+                    className={`retro-button p-3 md:px-8 md:py-4 rounded-lg font-semibold transition-all duration-200  theme-text-primary border-2 theme-border hover:theme-bg-hover`}
                   >
                     Get In Touch
                   </Link>
@@ -185,7 +185,7 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-20 theme-bg-primary">
+      <section className="py-16 md:py-20 theme-bg-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center mb-16 theme-text-primary">
             What I Do
@@ -207,7 +207,7 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-20 theme-bg-secondary">
+      <section className="py-16 md:py-20 theme-bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-6 theme-text-primary">
             Let's Build Something Amazing Together
@@ -226,7 +226,7 @@ const About = () => {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 sm:px-6 lg:px-8">
         <div className={`mb-20 scan-line`}>
           <h1
             className={`text-5xl md:text-6xl font-bold mb-6 theme-text-primary  gradient-text`}
@@ -277,7 +277,7 @@ const About = () => {
         </div>
       </div>
 
-      <div className="py-20 theme-bg-secondary">
+      <div className="py-16 md:py-20 theme-bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold mb-12 theme-text-primary text-center">
             My Journey
@@ -305,7 +305,7 @@ const About = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 sm:px-6 lg:px-8">
         <div className="mb-20">
           <h2 className="text-4xl font-bold mb-12 theme-text-primary text-center">
             My Core Values
@@ -331,7 +331,7 @@ const About = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <hr></hr>
       </div>
-      <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 sm:px-6 lg:px-8">
         <div>
           <h2 className="text-4xl font-bold mb-12 theme-text-primary text-center">
             Technical Skills
