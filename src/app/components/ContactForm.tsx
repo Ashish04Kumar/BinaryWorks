@@ -147,7 +147,7 @@ const ContactForm = () => {
           </div>
           <button
             type="submit"
-            className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-lg theme-bg-accent theme-text-accent font-semibold transition-all duration-200 hover:scale-105 ${
+            className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-lg theme-bg-accent theme-text-accent font-semibold transition-all duration-200 ${
               theme === "retro" ? "retro-button" : ""
             } ${theme === "futuristic" ? "theme-card-glow" : ""}`}
           >
