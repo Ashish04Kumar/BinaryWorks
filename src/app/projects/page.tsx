@@ -19,7 +19,6 @@ type ProjectItem = {
   readMore?: ReadMoreSlide[];
 };
 
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Projects = async ({ searchParams }: any) => {
   const filter = searchParams?.filter ?? "all";
@@ -27,17 +26,17 @@ const Projects = async ({ searchParams }: any) => {
 
   const projects: ProjectItem[] = [
     {
-      title: "Bombay Softwares Website Development",
+      title: "Company Website Platform",
       description:
-        "Worked on the official company website. Created multiple pages, designed Strapi CMS schemas, and integrated them into the frontend. Optimized website performance and improved overall UX.",
+        "Worked on a corporate website platform. Created multiple pages, designed CMS schemas, integrated them into the frontend, optimized performance, and improved UX.",
       tech: ["Next.js", "TypeScript", "Strapi CMS"],
       image: "/assets/projects/associated/bombay-softwares.png",
       category: "associated",
     },
     {
-      title: "PMOFY - Project & Sprint Management Tool",
+      title: "PMO Analyzer Tool",
       description:
-        "<p>A full-fledged PMO (Project Management Office) tool designed to manage end-to-end project execution and sprint tracking. It allows teams to upload sprint data (CSV), track estimations, tasks, team allocations, weightages, and progress in real time.</p>",
+        "<p>A full-fledged PMO (Project Management Office) tool designed to manage end-to-end project execution and sprint tracking. Teams can upload sprint data (CSV), track estimations, tasks, allocations, weightages, and progress in real time.</p>",
       tech: [
         "Next.js",
         "Node.js",
@@ -82,9 +81,9 @@ const Projects = async ({ searchParams }: any) => {
       ],
     },
     {
-      title: "Zakaa - Ministry of Environment, Water & Agriculture (U.A.E)",
+      title: "Fund Management Dashboard for U.A.E Ministry of Gov.",
       description:
-        "<p>A comprehensive fund allocation and monitoring platform developed for a UAE government initiative supporting both <strong>Arabic and English</strong> languages. It streamlines the approval and distribution of government funds across multiple ministries, departments, and sectors. The system allows decision-makers to track budget allocations and ensure transparency and accountability throughout the fund distribution process. </p>",
+        "<p>A fund allocation and monitoring platform for government initiatives. Supports multiple languages, streamlines approvals, tracks budgets, and ensures transparency in fund distribution.</p>",
       tech: [
         "Next.js",
         "TypeScript",
@@ -144,9 +143,9 @@ const Projects = async ({ searchParams }: any) => {
       ],
     },
     {
-      title: "Frass - Center School of Weapon and Tactics",
+      title: "Firearms Training & Analytics Dashboard",
       description:
-        "<p>This is a Central School of Weapons & Tactics shooting-practice project — a web dashboard with range visualization that records shots, predicts accuracy using a dummy model, and provides real-time analytics. Features include top-shooter leaderboards, round/game modes, individual performance cards, and visual charts to make target practice measurable and engaging.</p>",
+        "<p>A web dashboard for shooting practice and training analytics. Tracks shots, predicts accuracy, provides real-time performance dashboards, leaderboards, and visual charts.</p>",
       tech: [
         "Next.js",
         "TypeScript",
@@ -172,7 +171,7 @@ const Projects = async ({ searchParams }: any) => {
         },
         {
           img: "/assets/projects/associated/frass/session-detail-past.png",
-          desc: `<p>The <strong>Past Session Detail</strong> view provides a historical record of all previously created sessions. It includes detailed information such as training type, total number of soldiers involved, assigned training units, courses, and targets. This section allows users to review past sessions, compare results, and analyze trends over time. By examining historical session data, supervisors can identify training gaps, improve future session planning, and ensure that performance objectives are being met.</p>`,
+          desc: `<p>Historical record of past sessions with detailed info.</p>`,
         },
         {
           img: "/assets/projects/associated/frass/creating-new-session.png",
@@ -193,9 +192,9 @@ const Projects = async ({ searchParams }: any) => {
       ],
     },
     {
-      title: "XplorEarth",
-      description: `<p>XplorEarth is a comprehensive and <strong>SEO-friendly</strong> travel booking platform designed to make global travel planning effortless and personalized. It allows users to explore destinations across the world, discover exclusive deals, and customize travel packages according to their preferences, interests, and budgets.</p>
-  <p>Built with a strong focus on performance, accessibility, and search optimization, XplorEarth ensures faster load times and improved visibility across search engines. Users can enjoy a clean, intuitive interface</p>`,
+      title: "Global Travel Planner",
+      description:
+        "<p>A travel booking platform allowing users to explore destinations, find deals, and customize travel packages. SEO-friendly, high-performance, and intuitive UI.</p>",
       tech: [
         "Next.js",
         "TypeScript",
@@ -207,9 +206,9 @@ const Projects = async ({ searchParams }: any) => {
       category: "associated",
     },
     {
-      title: "Triveni Kalasangam",
-      description: `<p>Triveni Kalasangam is a long-established cultural organization that has been a hub for artists and art enthusiasts for several decades. The project involved developing a fully functional website with complete authentication and user flow implemented.</p>
-  <p>The platform emphasizes a seamless, user-friendly experience, robust backend functionality, and responsive design across all devices. It is designed to facilitate easy access to events, classes, and archives while maintaining high performance and scalability.</p>`,
+      title: "Cultural Events Platform",
+      description: `<p>A platform for managing cultural events, classes, and archives. Fully functional website with authentication and responsive design.. The project involved developing a fully functional website with complete authentication and user flow implemented.</p>
+  <p>The platform emphasizes a seamless, user-friendly experience, robust backend functionality, and responsive design across all devices.</p>`,
       tech: ["Next.js", "TypeScript", "Node.js", "MongoDB", "Mongoose", "JWT"],
       image: "/assets/projects/associated/triveni/cover-image.png",
       category: "associated",
@@ -229,17 +228,17 @@ const Projects = async ({ searchParams }: any) => {
       ],
     },
     {
-      title: "Elite Systems (U.A.E)",
-      description: `<p>As part of Bombay Softwares, I developed a fully <strong>SEO-friendly</strong> website for the company's U.A.E branch, registered under the name Elite Systems. The platform is bilingual, supporting both <strong>Arabic and English</strong>, ensuring accessibility and engagement for a diverse audience.</p>
-  <p>The project focuses on high performance, responsive design, and search engine optimization, delivering a seamless user experience across devices while maintaining a clean, scalable, and maintainable codebase.</p>`,
+      title: "Corporate Website Platform",
+      description:
+        "<p>Developed a bilingual corporate website platform for UAE branch, focusing on high performance, SEO, and responsive design in arabic and english language.</p>",
       tech: ["Next.js", "TypeScript", "Redux Toolkit"],
       image: "/assets/projects/associated/es/cover-image.png",
       category: "associated",
     },
     {
-      title: "Threadflows",
-      description: `<p>We are currently developing an application similar to Slack, designed for seamless team collaboration, messaging, and communication. The platform includes all the core features of Slack, along with our own custom, enhanced functionalities. Full data sharing and collaboration capabilities are supported.</p>
-<p>At present, the application is in its testing phase and is being used internally within our company as well as by some selected clients.</p>`,
+      title: "Team Collaboration Tool",
+      description:
+        "<p>An internal team collaboration and messaging platform similar to Slack, with custom enhancements and full data sharing capabilities.</p>",
       tech: [
         "Vanilla JS",
         "Socket.io",
@@ -274,7 +273,7 @@ const Projects = async ({ searchParams }: any) => {
       githubFrontend: "https://github.com/Ashish04Kumar/bharat-sahayta-hub",
       githubBackend:
         "https://github.com/Ashish04Kumar/bharat-sahayta-hub-backend",
-      live: "https://example.com",
+      live: "https://www.bharat-sahayta-hub.online",
       category: "my",
       readMore: [
         {
@@ -482,7 +481,7 @@ const Projects = async ({ searchParams }: any) => {
                         href={project.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`retro-button theme-card-glow flex items-center gap-2 px-4 py-2 rounded-lg theme-bg-accent theme-text-accent transition-all duration-200 hover:scale-105 `}
+                        className={`retro-button theme-card-glow flex items-center gap-2 px-4 py-2 rounded-lg theme-bg-accent theme-text-accent transition-all duration-200  `}
                       >
                         <ExternalLink className="w-4 h-4" />
                         Live Demo

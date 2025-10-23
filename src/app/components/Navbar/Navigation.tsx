@@ -137,7 +137,7 @@ const Navigation = () => {
               </Link>
             ))}
 
-            <div className="pt-2 border-t theme-border">
+            <div className="pt-2 border-t">
               <p className="px-3 py-2 text-xs theme-text-secondary opacity-70">
                 Theme
               </p>

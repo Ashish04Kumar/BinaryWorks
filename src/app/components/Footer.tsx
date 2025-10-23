@@ -94,7 +94,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t theme-border text-center theme-text-secondary">
+        <div className="mt-8 pt-8 border-t text-center theme-text-secondary">
           <p>&copy; {currentYear} Ashish Kumar. All rights reserved.</p>
         </div>
       </div>

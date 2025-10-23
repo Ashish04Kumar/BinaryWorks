@@ -63,6 +63,7 @@
 [data-theme='retro'] .theme-border {
   border: 2px solid var(--border-color);
 }
+
 [data-theme='dark'] .bg-card {
   background-color: #0F172A;
   border: none;
@@ -73,14 +74,44 @@
   background-color: #ffffff;
 
 }
+
+[data-theme='light'] .resume-border {
+  border: 1px solid rgb(235, 225, 225);
+
+}
+
+[data-theme='dark'] .resume-border {
+  border: 1px solid #334155;
+
+}
+
 [data-theme='retro'] .bg-card {
   background-color: #FEF3C7;
 
 }
+
 [data-theme='retro'] .theme-logo {
   text-shadow: 3px 3px 0px #f59e0b;
   font-family: 'Courier New', monospace;
   letter-spacing: 2px;
+}
+
+[data-theme='light'] .theme-resume-card {
+
+  background: var(--theme-resume-card);
+
+}
+
+[data-theme='dark'] .theme-resume-card {
+
+  background: var(--theme-resume-card);
+
+}
+
+[data-theme='retro'] .theme-resume-card {
+
+  background: var(--theme-resume-card);
+  border: 2px solid rgb(230, 34, 34)
 }
 
 [data-theme='futuristic'] .theme-logo {
@@ -127,6 +158,16 @@
 [data-theme='retro'] .retro-button:hover {
   transform: translate(2px, 2px);
   box-shadow: 2px 2px 0px var(--text-primary);
+}
+
+[data-theme='retro'] .theme-retro-resume {
+  background-color: #ffefef !important;
+}
+
+
+
+[data-theme='light'] .theme-retro-resume {
+  background-color: #F8FAFC !important
 }
 
 @keyframes glow {

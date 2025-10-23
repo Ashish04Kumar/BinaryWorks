@@ -168,13 +168,13 @@ const About = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/projects"
-                    className={`retro-button theme-card-glow px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-bg-accent theme-text-accent shadow-lg hover:shadow-xl`}
+                    className={`retro-button theme-card-glow px-8 py-4 rounded-lg font-semibold transition-all duration-200 theme-bg-accent theme-text-accent shadow-lg hover:shadow-xl`}
                   >
                     View My Work
                   </Link>
                   <Link
                     href="/contact"
-                    className={`retro-button px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-text-primary border-2 theme-border hover:theme-bg-hover`}
+                    className={`retro-button px-8 py-4 rounded-lg font-semibold transition-all duration-200  theme-text-primary border-2 theme-border hover:theme-bg-hover`}
                   >
                     Get In Touch
                   </Link>
@@ -218,7 +218,7 @@ const About = () => {
           </p>
           <Link
             href="/contact"
-            className={`retro-button theme-card-glow inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 theme-bg-accent theme-text-accent shadow-lg `}
+            className={`retro-button theme-card-glow inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold transition-all duration-200  theme-bg-accent theme-text-accent shadow-lg `}
           >
             Start a Conversation
             <ArrowRight className="w-5 h-5" />
