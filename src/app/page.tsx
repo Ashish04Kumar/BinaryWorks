@@ -41,8 +41,8 @@ const featured = featuredProjects.flatMap(({ title, label }) => {
   return project ? [{ ...project, label }] : [];
 });
 
-const container = "max-w-6xl mx-auto px-5 sm:px-6 lg:px-8";
-const section = "scroll-mt-24 py-24 md:py-32";
+const container = "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8";
+const section = "scroll-mt-24 py-16 md:py-32";
 
 const SectionHeader = ({
   n,
@@ -57,14 +57,14 @@ const SectionHeader = ({
   intro?: React.ReactNode;
   action?: React.ReactNode;
 }) => (
-  <Reveal className="mb-14 md:mb-16">
+  <Reveal className="mb-10 md:mb-16">
     <div className="flex items-end justify-between flex-wrap gap-6">
       <div className="max-w-3xl">
         <p className="bw-kicker mb-5">
           <span className="bw-accent">{n}</span> {label}
         </p>
-        <h2 className="text-4xl md:text-6xl font-semibold tracking-[-0.035em] leading-[1.02]">{children}</h2>
-        {intro && <p className="mt-6 text-lg bw-muted leading-relaxed max-w-2xl">{intro}</p>}
+        <h2 className="text-3xl md:text-6xl font-semibold tracking-[-0.035em] leading-[1.05]">{children}</h2>
+        {intro && <p className="mt-4 md:mt-6 text-base md:text-lg bw-muted leading-relaxed max-w-2xl">{intro}</p>}
       </div>
       {action}
     </div>
@@ -93,11 +93,11 @@ const Home = () => {
       <Spotlight id="intro" className="scroll-mt-24 border-b bw-rule">
         <div className={`${container} pt-36 md:pt-44 pb-20 md:pb-28 grid lg:grid-cols-[1.2fr_1fr] gap-14 lg:gap-16 items-center`}>
           <Reveal>
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] bw-muted mb-9">
+            <p className="font-mono text-[10px] md:text-[11px] uppercase tracking-[0.16em] bw-muted mb-6 md:mb-9">
               {experience[0].title.split(" · ")[0]} <span className="bw-faint">/</span> {experience[0].company}{" "}
               <span className="bw-faint">/</span> {profile.location.split(",")[0]}
             </p>
-            <h1 className="text-[2.6rem] leading-[1.04] sm:text-6xl md:text-[4.4rem] font-semibold tracking-[-0.045em] mb-8">
+            <h1 className="text-[1.95rem] leading-[1.1] sm:text-6xl md:text-[4.4rem] font-semibold tracking-[-0.045em] mb-6 md:mb-8">
               I build the <Term tip="React · Next.js · TypeScript">interfaces</Term>, the{" "}
               <Term tip="Python · FastAPI · Flask">APIs</Term> behind them, and lately,{" "}
               <Term tip="LangChain · LangGraph">
@@ -105,7 +105,7 @@ const Home = () => {
               </Term>{" "}
               that run on both.
             </h1>
-            <p className="text-lg md:text-xl bw-muted max-w-xl mb-10 leading-relaxed">
+            <p className="text-base md:text-xl bw-muted max-w-xl mb-8 md:mb-10 leading-relaxed">
               {profile.experienceYears} years building web apps people use every day: dashboards, APIs, live tracking tools
               and RAG pipelines. Now I also build AI agents that remember, use tools and talk.
             </p>
@@ -134,7 +134,7 @@ const Home = () => {
 
       {/* About */}
       <section id="about" className={`${section} tone-paper`}>
-        <div className={`${container} grid md:grid-cols-[1fr_1.25fr] gap-16 md:gap-24 items-center`}>
+        <div className={`${container} grid md:grid-cols-[1fr_1.25fr] gap-14 md:gap-24 items-center`}>
           <Reveal>
             <PhotoStack photos={[ashishImg1, ashishImg2, ashishImg3]} />
           </Reveal>
@@ -142,10 +142,10 @@ const Home = () => {
             <p className="bw-kicker mb-5">
               <span className="bw-accent">01</span> about
             </p>
-            <h2 className="text-4xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.05] mb-8">
+            <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.05] mb-6 md:mb-8">
               Hi, I&apos;m <Accent>Ashish.</Accent>
             </h2>
-            <div className="space-y-5 text-lg bw-muted leading-relaxed mb-10">
+            <div className="space-y-4 md:space-y-5 text-base md:text-lg bw-muted leading-relaxed mb-8 md:mb-10">
               <p>
                 Most of my professional work has been on the frontend: building enterprise web apps in React and Next.js,
                 from complex dashboards to large multilingual sites.
@@ -181,15 +181,16 @@ const Home = () => {
           </SectionHeader>
           <div className="grid md:grid-cols-3 border-t bw-rule md:divide-x divide-[var(--border-color)] bw-beam-x bw-beam-cols">
             {pillars.map((p, i) => (
-              <Reveal key={p.key} delay={i * 90} className="py-10 md:py-12 md:px-8 first:md:pl-0 last:md:pr-0 border-b md:border-b-0 bw-rule">
-                <p className="font-mono text-[11px] uppercase tracking-[0.14em] bw-faint mb-8">
+              <Reveal key={p.key} delay={i * 90} className="py-8 md:py-12 md:px-8 first:md:pl-0 last:md:pr-0 border-b md:border-b-0 bw-rule">
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] bw-faint mb-5 md:mb-8">
                   <span className="bw-accent">L{i + 1}</span> · {layerNames[p.key]}
                 </p>
-                <h3 className="text-2xl md:text-[1.7rem] font-semibold tracking-[-0.02em] mb-3">{p.title}</h3>
-                <p className="bw-muted leading-relaxed mb-8">{p.summary}</p>
-                <ul className="space-y-2 text-[15px]">
+                <h3 className="text-xl md:text-[1.7rem] font-semibold tracking-[-0.02em] mb-3">{p.title}</h3>
+                <p className="text-[0.95rem] md:text-base bw-muted leading-relaxed mb-6 md:mb-8">{p.summary}</p>
+                {/* phones: two columns, so the three lists don't run for screens */}
+                <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2 text-sm md:text-[15px]">
                   {p.skills.map((s) => (
-                    <li key={s} className="flex items-center gap-3">
+                    <li key={s} className="flex items-center gap-2.5 md:gap-3 min-w-0">
                       <span className="w-1 h-1 rounded-full bw-accent-fill shrink-0" />
                       {s}
                     </li>
@@ -213,7 +214,7 @@ const Home = () => {
             What I&apos;m building <Accent>with LLMs.</Accent>
           </SectionHeader>
 
-          <Reveal className="mb-24">
+          <Reveal className="mb-14 md:mb-24">
             <AiLab />
           </Reveal>
 
@@ -221,11 +222,11 @@ const Home = () => {
           <div className="border-b bw-rule">
             {aiWork.map((w, i) => (
               <Reveal key={w.name}>
-                <article className="py-14 md:py-20 border-t bw-rule">
+                <article className="py-8 md:py-20 border-t bw-rule">
                   <div className="grid md:grid-cols-[1fr_1.25fr] gap-8 md:gap-14">
                     <div>
                       <p className="font-mono text-xs bw-faint mb-5">{String(i + 1).padStart(2, "0")}</p>
-                      <h3 className="text-4xl md:text-6xl font-semibold tracking-[-0.04em] mb-4">
+                      <h3 className="text-3xl md:text-6xl font-semibold tracking-[-0.04em] mb-3 md:mb-4">
                         {w.demo ? (
                           <a href={`#${w.demo}`} className="group inline-flex items-baseline gap-3 hover:text-[var(--bw-accent)] transition-colors">
                             {w.name}
@@ -235,10 +236,10 @@ const Home = () => {
                           w.name
                         )}
                       </h3>
-                      <p className="text-lg mb-4">
+                      <p className="text-base md:text-lg mb-3 md:mb-4">
                         {w.tagline.split(/(Agentic RAG)/).map((part, k) => (part === "Agentic RAG" ? <strong key={k} className="font-semibold theme-text-primary">{part}</strong> : part))}
                       </p>
-                      <p className="bw-muted leading-relaxed mb-7">{w.summary}</p>
+                      <p className="text-[0.95rem] md:text-base bw-muted leading-relaxed mb-6 md:mb-7">{w.summary}</p>
                       {(w.links.length > 0 || w.demo) && (
                         <div className="flex flex-wrap gap-2">
                           {w.demo && (
@@ -255,9 +256,9 @@ const Home = () => {
                       )}
                     </div>
                     <div>
-                      <ul className="space-y-3.5 mb-7">
+                      <ul className="space-y-2.5 md:space-y-3.5 mb-6 md:mb-7">
                         {w.highlights.map((h) => (
-                          <li key={h} className="grid grid-cols-[1.25rem_1fr] leading-relaxed text-[15px]">
+                          <li key={h} className="grid grid-cols-[1.25rem_1fr] leading-relaxed text-sm md:text-[15px]">
                             <span className="mt-[0.6rem] w-1.5 h-1.5 rounded-full bw-accent-fill" />
                             <span>{h}</span>
                           </li>
@@ -324,7 +325,7 @@ const Home = () => {
                 <details key={job.company} className="bw-row group border-b bw-rule" open={i === 0} data-stagger style={{ "--i": i } as React.CSSProperties}>
                   <summary className="grid grid-cols-[1fr_auto] md:grid-cols-[12rem_1fr_auto] gap-x-6 gap-y-1 py-7 cursor-pointer items-center bw-row-link md:px-5 md:-mx-5 rounded-xl">
                     <span className="font-mono text-xs bw-muted order-2 md:order-none col-span-2 md:col-span-1">{job.period}</span>
-                    <span className="text-lg md:text-xl font-semibold tracking-tight">
+                    <span className="text-base md:text-xl font-semibold tracking-tight">
                       {job.title} <span className="bw-muted font-normal">· {job.company}</span>
                     </span>
                     <span className="bw-chevron grid place-items-center w-8 h-8 rounded-full border bw-rule text-lg bw-muted transition-transform duration-200">+</span>
@@ -337,7 +338,7 @@ const Home = () => {
               ))}
               <div className="grid md:grid-cols-[12rem_1fr] gap-x-6 gap-y-1 py-7 border-b bw-rule items-center">
                 <span className="font-mono text-xs bw-muted">{education.period}</span>
-                <span className="text-lg md:text-xl font-semibold tracking-tight">
+                <span className="text-base md:text-xl font-semibold tracking-tight">
                   {education.degree} <span className="bw-muted font-normal">· {education.school}</span>
                 </span>
               </div>
@@ -364,7 +365,7 @@ const Home = () => {
             <p className="bw-kicker mb-6 justify-center">
               <span className="bw-accent">06</span> contact
             </p>
-            <h2 className="text-6xl md:text-[8.5rem] font-semibold tracking-[-0.06em] leading-[0.95] mb-12">
+            <h2 className="text-5xl md:text-[8.5rem] font-semibold tracking-[-0.06em] leading-[0.95] mb-8 md:mb-12">
               Say <Accent>hello.</Accent>
             </h2>
             <div className="flex flex-wrap justify-center gap-3">

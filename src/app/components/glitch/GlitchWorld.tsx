@@ -8,8 +8,8 @@ const time = (iso: string) => {
   return (today ? "" : d.toLocaleDateString(undefined, { day: "numeric", month: "short" }) + " ") + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 };
 
-const Column = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (
-  <div className="p-4 min-w-0">
+const Column = ({ icon, title, children, hide }: { icon: React.ReactNode; title: string; children: React.ReactNode; hide?: boolean }) => (
+  <div className={`p-4 min-w-0 ${hide ? "hidden md:block" : ""}`}>
     <p className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] bw-muted mb-3">
       {icon} {title}
     </p>
@@ -20,7 +20,10 @@ const Column = ({ icon, title, children }: { icon: React.ReactNode; title: strin
 const Empty = ({ children }: { children: React.ReactNode }) => <p className="text-xs bw-faint leading-relaxed">{children}</p>;
 
 // What Glitch is keeping for this visitor, plus the demo smart-home devices (tap to switch them by hand too)
-const GlitchWorld = ({ world, onChange }: { world: World; onChange: (w: World) => void }) => {
+// phone: "saved" shows reminders, lists and notes; "home" the devices; anything else hides all of it (md and up show everything)
+const GlitchWorld = ({ world, onChange, phonePanel }: { world: World; onChange: (w: World) => void; phonePanel?: string }) => {
+  const saved = phonePanel !== "saved";
+  const home = phonePanel !== "home";
   const setDevice = <K extends keyof Devices>(k: K, v: Devices[K]) => onChange({ ...world, devices: { ...world.devices, [k]: v } });
   const d = world.devices;
   const reminders = world.reminders.filter((r) => !r.done).sort((a, b) => a.at.localeCompare(b.at));
@@ -32,8 +35,8 @@ const GlitchWorld = ({ world, onChange }: { world: World; onChange: (w: World) =
     }`;
 
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-4 border-t bw-rule divide-y sm:divide-y-0 sm:divide-x divide-[var(--border-color)]">
-      <Column icon={<Bell className="w-3.5 h-3.5" />} title="Reminders">
+    <div className={`${phonePanel === "camera" ? "hidden md:grid" : "grid"} md:grid-cols-2 lg:grid-cols-4 border-t bw-rule divide-y md:divide-y-0 md:divide-x divide-[var(--border-color)]`}>
+      <Column icon={<Bell className="w-3.5 h-3.5" />} title="Reminders" hide={saved}>
         {reminders.length ? (
           <ul className="space-y-1.5">
             {reminders.map((r) => (
@@ -57,7 +60,7 @@ const GlitchWorld = ({ world, onChange }: { world: World; onChange: (w: World) =
         )}
       </Column>
 
-      <Column icon={<ListChecks className="w-3.5 h-3.5" />} title="Lists & to-dos">
+      <Column icon={<ListChecks className="w-3.5 h-3.5" />} title="Lists & to-dos" hide={saved}>
         {lists.length || world.todos.length ? (
           <div className="space-y-3 text-sm">
             {lists.map(([name, items]) => (
@@ -95,7 +98,7 @@ const GlitchWorld = ({ world, onChange }: { world: World; onChange: (w: World) =
         )}
       </Column>
 
-      <Column icon={<NotebookPen className="w-3.5 h-3.5" />} title="Notes">
+      <Column icon={<NotebookPen className="w-3.5 h-3.5" />} title="Notes" hide={saved}>
         {world.notes.length ? (
           <ul className="space-y-1.5 text-sm">
             {world.notes.slice(0, 5).map((n, i) => (
@@ -109,7 +112,7 @@ const GlitchWorld = ({ world, onChange }: { world: World; onChange: (w: World) =
         )}
       </Column>
 
-      <Column icon={<Plug className="w-3.5 h-3.5" />} title="Smart home · demo">
+      <Column icon={<Plug className="w-3.5 h-3.5" />} title="Smart home · demo" hide={home}>
         <div className="grid grid-cols-2 gap-2">
           <button onClick={() => setDevice("lights", d.lights === "on" ? "off" : "on")} className={tile(d.lights === "on")}>
             <Lightbulb className={`w-4 h-4 ${d.lights === "on" ? "text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)]" : "bw-faint"}`} />

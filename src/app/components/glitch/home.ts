@@ -74,6 +74,8 @@ export async function createHomeScene(host: HTMLElement, initial: Devices): Prom
   controls.minPolarAngle = 1.0;
   controls.maxPolarAngle = 1.5;
   controls.update();
+  // touch: horizontal drags turn the view, vertical swipes still scroll the page
+  if (!window.matchMedia("(pointer: fine)").matches) renderer.domElement.style.touchAction = "pan-y";
 
   const hemi = new THREE.HemisphereLight(0xffffff, 0x8a8178, 1.2);
   const sun = new THREE.DirectionalLight(0xffffff, 1.2);

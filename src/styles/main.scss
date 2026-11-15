@@ -463,3 +463,14 @@ details.bw-row[open] .bw-chevron { transform: rotate(45deg); }
   background: var(--accent-bright);
   animation: bw-blink 1s steps(1) infinite;
 }
+
+// Phones: Lenis's "contain" on inner scroll boxes (chat logs) stops a swipe from moving the page,
+// even when the box has nothing to scroll. On touch screens let the swipe carry on to the page.
+@media (pointer: coarse) {
+  html.lenis [data-lenis-prevent] { overscroll-behavior: auto; } // beats lenis.css (.lenis [data-lenis-prevent])
+}
+
+// Phones: everything is sized in rem, so a slightly smaller root scales text and spacing together
+@media (max-width: 639px) {
+  html { font-size: 15px; }
+}

@@ -1,6 +1,6 @@
 "use client";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
-import { ArrowUp, Camera, CameraOff, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { ArrowUp, Camera, CameraOff, Loader2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { createFace } from "./face.js";
 import { createGlitchScene, type GestureStep, type GlitchScene } from "./scene";
 import type { HomeScene } from "./home";
@@ -107,6 +107,8 @@ const GlitchDemo = () => {
   const homeHostRef = useRef<HTMLDivElement>(null);
   const miniFaceRef = useRef<HTMLDivElement>(null);
   const homeRef = useRef<HomeScene | null>(null);
+  // phones show one of the lower panels at a time
+  const [phonePanel, setPhonePanel] = useState<"saved" | "home" | "camera">("home");
   const [homeState, setHomeState] = useState<"idle" | "loading" | "ready" | "error">("idle");
 
   // ---------- body: face + 3D + mood ----------
@@ -191,26 +193,32 @@ const GlitchDemo = () => {
     homeRef.current?.setPaused(view !== "home");
   }, [view, theme]);
 
-  // Home view: the smart-home room loads the first time it is opened (the models are ~15 MB)
+  // The smart-home room (~15 MB of models) starts loading as soon as the demo opens, whichever view is
+  // showing, so it is ready by the time someone switches to Home or asks Glitch to turn something on.
+  // It sits paused (not drawing) until the Home view is open.
   useEffect(() => {
     const host = homeHostRef.current;
-    if (view !== "home" || !host || homeRef.current || homeState === "loading") return;
-    setHomeState("loading");
+    if (!host || no3dRef.current) return;
     let cancelled = false;
-    import("./home")
-      .then(({ createHomeScene }) => createHomeScene(host, worldRef.current.devices))
-      .then((home) => {
-        if (cancelled) return home.dispose();
-        homeRef.current = home;
-        home.setPaused(viewRef.current !== "home");
-        setHomeState("ready");
-      })
-      .catch(() => !cancelled && setHomeState("error"));
+    // a moment's head start for the face and the chat before the big download begins
+    const start = setTimeout(() => {
+      setHomeState("loading");
+      import("./home")
+        .then(({ createHomeScene }) => createHomeScene(host, worldRef.current.devices))
+        .then((home) => {
+          if (cancelled) return home.dispose();
+          homeRef.current = home;
+          home.set(worldRef.current.devices);
+          home.setPaused(viewRef.current !== "home");
+          setHomeState("ready");
+        })
+        .catch(() => !cancelled && setHomeState("error"));
+    }, 600);
     return () => {
       cancelled = true;
+      clearTimeout(start);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view]);
+  }, []);
 
   useEffect(() => {
     homeRef.current?.set(world.devices);
@@ -527,29 +535,36 @@ const GlitchDemo = () => {
 
   return (
     <div className="bw-panel overflow-hidden">
-      <div className="grid lg:grid-cols-[1.2fr_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         {/* body: full 3D robot, or the face alone */}
         <div className="relative border-b lg:border-b-0 lg:border-r bw-rule bw-grid">
           <div
             ref={stageRef}
-            className={`h-[380px] md:h-[480px] w-full ${view !== "robot" ? "invisible" : ""}`}
+            className={`h-[300px] sm:h-[380px] md:h-[480px] w-full ${view !== "robot" ? "invisible" : ""}`}
             aria-label="3D model of Glitch: a round display face on an MG996R pan-tilt bracket"
             role="img"
           />
           {/* face view: the round display on its own, large */}
           <div className={`absolute inset-0 grid place-items-center ${view === "face" ? "" : "hidden"}`}>
-            <div ref={faceHostRef} className="w-[min(88%,420px)] md:w-[min(82%,460px)] aspect-square" />
+            <div ref={faceHostRef} className="w-[min(72%,260px)] sm:w-[min(88%,420px)] md:w-[min(82%,460px)] aspect-square" />
           </div>
           {/* home view: the smart-home room Glitch controls, with Glitch watching from the corner */}
           <div className={`absolute inset-0 ${view === "home" ? "" : "hidden"}`}>
             <div ref={homeHostRef} className="absolute inset-0" aria-label="3D living room with the lights, fan, AC and TV Glitch controls" role="img" />
             {homeState !== "ready" && (
-              <p className="absolute inset-0 grid place-items-center font-mono text-xs bw-muted">
-                {homeState === "error" ? "Couldn't load the room." : "Loading the room…"}
-              </p>
+              <div className="absolute inset-0 grid place-items-center">
+                {homeState === "error" ? (
+                  <p className="font-mono text-xs bw-muted">Couldn&apos;t load the room.</p>
+                ) : (
+                  <p role="status" className="flex flex-col items-center gap-3 font-mono text-xs bw-muted">
+                    <Loader2 className="w-7 h-7 animate-spin bw-accent" />
+                    Loading the room…
+                  </p>
+                )}
+              </div>
             )}
-            <div ref={miniFaceRef} className="absolute bottom-3 left-3 w-20 h-20 rounded-full overflow-hidden bg-black shadow-lg ring-1 ring-white/10" />
-            <p className="absolute bottom-2 right-3 font-mono text-[10px] text-white/60 text-right leading-tight">
+            <div ref={miniFaceRef} className="absolute bottom-3 left-3 w-12 h-12 md:w-20 md:h-20 rounded-full overflow-hidden bg-black shadow-lg ring-1 ring-white/10" />
+            <p className="absolute bottom-2 right-3 max-w-[70%] font-mono text-[8px] md:text-[10px] text-white/60 text-right leading-tight">
               Models (CC BY): room by dylanheyes, AC by maxsbond.work,
               <br />
               fan by lucaboechat, lamp by fchaolshi · Sketchfab
@@ -600,17 +615,18 @@ const GlitchDemo = () => {
         </div>
 
         {/* chat */}
-        <div className="flex flex-col min-h-[380px] md:min-h-[480px]">
-          <div ref={logRef} data-lenis-prevent className="flex-1 overflow-y-auto px-4 py-4 space-y-3 max-h-[420px]" aria-live="polite">
+        <div className="flex flex-col min-h-[260px] md:min-h-[480px] border-t lg:border-t-0 bw-rule">
+          <div ref={logRef} data-lenis-prevent className="flex-1 overflow-y-auto px-4 py-4 space-y-3 max-h-[300px] md:max-h-[420px]" aria-live="polite">
             {messages.length === 0 && (
               <div className="h-full flex flex-col justify-center">
-                <p className="text-lg font-medium mb-1">Say hi to Glitch.</p>
-                <p className="text-sm bw-muted mb-4">
+                <p className="text-base md:text-lg font-medium mb-1">Say hi to Glitch.</p>
+                <p className="text-[13px] md:text-sm bw-muted mb-3 md:mb-4">
                   Talk or type. It can set reminders, keep lists and notes, and switch the lights, fan, AC and TV in its room.
                 </p>
-                <div className="flex flex-wrap gap-2">
+                {/* phones: one swipeable row of suggestions instead of a tall wrapped block */}
+                <div data-lenis-prevent className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 md:mx-0 md:px-0 md:flex-wrap md:overflow-visible [scrollbar-width:none]">
                   {["Remind me to drink water in 1 minute", "Add milk and eggs to my shopping list", "Turn on the lights and set the AC to 22", "Who made you?"].map((s) => (
-                    <button key={s} onClick={() => send(s)} className="text-sm px-3 py-1.5 rounded-full border bw-rule bw-chip cursor-pointer">
+                    <button key={s} onClick={() => send(s)} className="shrink-0 text-xs md:text-sm px-3 py-1.5 rounded-full border bw-rule bw-chip cursor-pointer">
                       {s}
                     </button>
                   ))}
@@ -676,8 +692,30 @@ const GlitchDemo = () => {
         </div>
       </div>
 
+      {/* phones: pick which lower panel to show */}
+      <div role="tablist" aria-label="More" className="md:hidden flex gap-1 p-1.5 border-t bw-rule">
+        {(
+          [
+            ["home", "Smart home"],
+            ["saved", "Reminders & notes"],
+            ["camera", "Camera"],
+          ] as const
+        ).map(([k, label]) => (
+          <button
+            key={k}
+            role="tab"
+            aria-selected={phonePanel === k}
+            onClick={() => setPhonePanel(k)}
+            className={`flex-1 py-2 rounded-lg text-xs font-medium cursor-pointer transition-colors ${phonePanel === k ? "bw-tint bw-accent" : "bw-muted"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* what Glitch keeps for you, and the devices it controls */}
       <GlitchWorld
+        phonePanel={phonePanel}
         world={world}
         onChange={(w) => {
           // switching a device by hand also shows it happen in the room
@@ -687,9 +725,9 @@ const GlitchDemo = () => {
       />
 
       {/* eyes: camera + gestures */}
-      <div className="grid md:grid-cols-[17rem_1fr] border-t bw-rule">
+      <div className={`${phonePanel === "camera" ? "grid" : "hidden"} md:grid md:grid-cols-[17rem_1fr] border-t bw-rule`}>
         <div className="p-3 md:border-r bw-rule">
-          <div className="relative aspect-[4/3] rounded-md overflow-hidden border bw-rule bg-black/80">
+          <div className="relative aspect-video md:aspect-[4/3] rounded-md overflow-hidden border bw-rule bg-black/80">
             <video ref={videoRef} className={`absolute inset-0 w-full h-full object-cover -scale-x-100 ${camOn ? "" : "hidden"}`} />
             <canvas ref={overlayRef} className="absolute inset-0 w-full h-full" />
             {!camOn && (
@@ -714,18 +752,18 @@ const GlitchDemo = () => {
           <p className="font-mono text-xs bw-muted mb-2">
             hand gestures {camOn ? "· show one to the camera, or tap" : "· tap one, or turn the camera on"}
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 md:gap-2">
             {GESTURES.map((g) => (
               <button
                 key={g.name}
                 onClick={() => act(g.name)}
-                className={`flex flex-col items-start gap-0.5 px-2.5 py-2 rounded-md border text-left cursor-pointer transition-colors ${
+                className={`flex flex-col items-center md:items-start gap-0.5 px-1.5 md:px-2.5 py-2 rounded-md border text-center md:text-left cursor-pointer transition-colors ${
                   lastGesture === g.name ? "bw-accent-border bw-tint" : "bw-rule bw-row-link"
                 }`}
               >
                 <span className="text-lg leading-none">{g.icon}</span>
-                <span className="font-mono text-[10px] bw-muted">{g.name}</span>
-                <span className="text-xs">{g.label}</span>
+                <span className="hidden md:inline font-mono text-[10px] bw-muted">{g.name}</span>
+                <span className="text-[11px] md:text-xs">{g.label}</span>
               </button>
             ))}
           </div>

@@ -60,7 +60,7 @@ const SectionNav = ({ sections }: { sections: Section[] }) => {
                 className="group flex items-center gap-2 cursor-pointer"
               >
                 <span
-                  className={`px-1.5 py-0.5 rounded theme-bg-primary transition-opacity duration-200 ${
+                  className={`px-1.5 py-0.5 rounded theme-bg-primary whitespace-nowrap transition-opacity duration-200 ${
                     isActive
                       ? "bw-accent"
                       : "hidden xl:inline opacity-0 xl:group-hover:opacity-100 bw-muted"

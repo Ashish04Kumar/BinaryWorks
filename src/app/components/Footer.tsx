@@ -5,7 +5,7 @@ const Footer = () => {
 
   return (
     <footer className="theme-bg-primary border-t bw-rule">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row gap-3 justify-between font-mono text-xs bw-muted">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 xl:pb-8 flex flex-col sm:flex-row gap-3 justify-between font-mono text-xs bw-muted">
         <p>
           © {currentYear} {profile.name} · built with Next.js & TypeScript
         </p>

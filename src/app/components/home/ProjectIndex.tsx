@@ -24,10 +24,10 @@ const ProjectIndex = ({ items }: { items: Item[] }) => {
             <Link
               href={`/projects?filter=all&project=${encodeURIComponent(p.title)}`}
               onMouseMove={track(p.image)}
-              className="group grid grid-cols-[2.5rem_1fr_auto] md:grid-cols-[3.5rem_1fr_15rem_5.5rem] items-baseline gap-x-4 py-5 md:py-6 transition-colors bw-row-link"
+              className="group grid grid-cols-[2.5rem_1fr_auto] md:grid-cols-[3.5rem_1fr_15rem_5.5rem] items-baseline gap-x-4 py-4 md:py-6 transition-colors bw-row-link"
             >
               <span className="font-mono text-sm bw-muted">{String(i + 1).padStart(2, "0")}</span>
-              <span className="text-xl md:text-3xl font-semibold tracking-tight group-hover:translate-x-1 transition-transform">
+              <span className="text-lg md:text-3xl font-semibold tracking-tight group-hover:translate-x-1 transition-transform">
                 {p.label}
               </span>
               <span className="hidden md:block font-mono text-xs bw-muted truncate">
