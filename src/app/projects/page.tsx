@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Github } from "lucide-react";
 import ProjectModal from "../components/ProjectModal";
+import ClampHtml from "../components/ClampHtml";
 import { projects, type ProjectItem } from "@/data/projects";
 
 const filters = [
@@ -39,14 +40,14 @@ const Projects = async ({ searchParams }: any) => {
   return (
     <div className="theme-bg-primary theme-text-primary min-h-screen">
       <header className="bw-grid border-b bw-rule">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10 md:py-20">
           <p className="font-mono text-xs md:text-sm bw-muted mb-4">
             <span className="bw-accent">~</span> / projects
           </p>
-          <h1 className="text-4xl md:text-6xl font-semibold tracking-tight mb-6">
+          <h1 className="text-3xl md:text-6xl font-semibold tracking-tight mb-4 md:mb-6">
             Things I&apos;ve built.
           </h1>
-          <p className="text-lg bw-muted max-w-2xl leading-relaxed mb-10">
+          <p className="text-base md:text-lg bw-muted max-w-2xl leading-relaxed mb-8 md:mb-10">
             My own AI projects, and the products I build at work: dashboards,
             websites and a document chatbot.
           </p>
@@ -76,7 +77,7 @@ const Projects = async ({ searchParams }: any) => {
           return (
             <article
               key={project.title}
-              className="grid md:grid-cols-2 gap-8 md:gap-14 py-14 md:py-20 border-b bw-rule items-center"
+              className="grid md:grid-cols-2 gap-5 md:gap-14 py-10 md:py-20 border-b bw-rule items-center"
             >
               <div className={`relative aspect-[16/10] rounded-md overflow-hidden border bw-rule ${index % 2 ? "md:order-2" : ""}`}>
                 <Image
@@ -92,14 +93,11 @@ const Projects = async ({ searchParams }: any) => {
                   <span className="bw-accent">{String(index + 1).padStart(2, "0")}</span> ·{" "}
                   {project.category === "my" ? "personal" : "work"}
                 </p>
-                <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
+                <h2 className="text-xl md:text-3xl font-semibold tracking-tight mb-3 md:mb-4">
                   {project.title}
                 </h2>
-                <div
-                  className="bw-prose bw-muted leading-relaxed mb-5 space-y-3"
-                  dangerouslySetInnerHTML={{ __html: project.description }}
-                />
-                <p className="font-mono text-xs leading-6 mb-6">{project.tech.join(" / ")}</p>
+                <ClampHtml html={project.description} className="bw-prose bw-muted leading-relaxed space-y-3 text-[0.95rem] md:text-base" />
+                <p className="font-mono text-[11px] md:text-xs leading-5 md:leading-6 mb-5 md:mb-6">{project.tech.join(" / ")}</p>
 
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-sm">
                   {project.demo && (

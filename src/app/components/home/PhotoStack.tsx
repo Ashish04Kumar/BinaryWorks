@@ -14,7 +14,7 @@ const PhotoStack = ({ photos }: { photos: StaticImageData[] }) => {
     <button
       onClick={next}
       aria-label="Show next photo"
-      className="relative block w-full max-w-sm aspect-[4/5] mx-auto cursor-pointer"
+      className="relative block w-full max-w-[13.5rem] sm:max-w-xs md:max-w-sm aspect-[4/5] mx-auto cursor-pointer"
     >
       {order
         .slice()
@@ -32,7 +32,7 @@ const PhotoStack = ({ photos }: { photos: StaticImageData[] }) => {
                 src={photos[photoIndex]}
                 alt="Ashish Kumar"
                 fill
-                sizes="(max-width: 768px) 90vw, 384px"
+                sizes="(max-width: 640px) 216px, (max-width: 768px) 320px, 384px"
                 className="object-cover"
                 placeholder="blur"
               />
