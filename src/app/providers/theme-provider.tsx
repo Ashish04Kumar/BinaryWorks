@@ -3,7 +3,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import Cookies from "js-cookie";
 
-export type ThemeMode = "light" | "dark" | "retro" | "futuristic";
+export type ThemeMode = "light" | "dark";
+
+const isThemeMode = (value: unknown): value is ThemeMode =>
+  value === "light" || value === "dark";
 
 interface ThemeContextType {
   theme: ThemeMode;
@@ -25,11 +28,11 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem("portfolio-theme") as ThemeMode | null;
-    const cookieTheme = Cookies.get("portfolio-theme") as ThemeMode | undefined;
-    
-    const initialTheme = saved || cookieTheme || "light";
-    
+    // Anything other than light/dark saved by an older version falls back to light
+    const saved = localStorage.getItem("portfolio-theme");
+    const cookieTheme = Cookies.get("portfolio-theme");
+    const initialTheme = [saved, cookieTheme].find(isThemeMode) ?? "light";
+
     setThemeState(initialTheme);
     document.documentElement.setAttribute("data-theme", initialTheme);
     setIsInitialized(true);

@@ -1,15 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/about",
-        permanent: false,
-      },
-    ];
-  },
+  // lets the dev server be opened through a temporary Cloudflare tunnel link (for sharing a preview)
+  allowedDevOrigins: ["*.trycloudflare.com"],
 };
 
 export default nextConfig;

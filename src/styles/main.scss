@@ -1,218 +1,465 @@
 @import "variables";
 @import "tailwindcss";
 
-.theme-bg-primary {
+/* ---------- base ---------- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
   background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv11";
 }
 
-.theme-bg-secondary {
-  background-color: var(--bg-secondary);
-}
-
-.theme-bg-nav {
-  background-color: var(--bg-nav);
-}
-
-.theme-bg-card {
-  background-color: var(--bg-card);
-}
-
-.theme-bg-hover:hover {
-  background-color: var(--bg-hover);
-}
-
-.theme-bg-footer {
-  background-color: var(--bg-footer);
-}
-
-.theme-bg-accent {
-  background-color: var(--bg-accent);
-}
-
-.theme-text-primary {
+::selection {
+  background: var(--accent-glow);
   color: var(--text-primary);
 }
 
-.theme-text-secondary {
-  color: var(--text-secondary);
+:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
-.theme-text-accent {
-  color: var(--text-accent);
+.font-mono,
+code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-.read-more-btn {
-  background: var(--readmore-btn);
-  color: var(--readmore-txt);
+// One italic serif word per headline gives the type some voice
+.font-serif-accent {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
+.theme-bg-primary { background-color: var(--bg-primary); }
+.theme-bg-nav { background-color: var(--bg-nav); }
+.theme-bg-card { background-color: var(--bg-card); }
+.theme-text-primary { color: var(--text-primary); }
 
+/* ---------- colour roles ---------- */
 
-.theme-shadow {
-  box-shadow: 0 4px 6px -1px var(--shadow), 0 -3px 5px -1px var(--shadow);
+.bw-accent { color: var(--bw-accent); }
+.bw-accent-fill { background-color: var(--accent-bright); }
+.bw-accent-border { border-color: var(--accent-bright); }
+// Solid "primary" surface: ink in light, near-white in dark (buttons, chat bubbles)
+.bw-accent-bg { background-color: var(--accent-solid); color: var(--accent-solid-fg); }
+.bw-muted { color: var(--text-secondary); }
+.bw-faint { color: var(--text-tertiary); }
+.bw-rule { border-color: var(--border-color); }
+.bw-rule-strong { border-color: var(--border-strong); }
+.bw-tint { background-color: color-mix(in srgb, var(--accent-bright) 9%, transparent); }
+.bw-subtle { background-color: var(--bg-subtle); }
+
+/* ---------- section tones ---------- */
+
+.tone-base { background-color: var(--bg-primary); color: var(--text-primary); }
+.tone-paper {
+  background-color: var(--tone-paper);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 0 var(--tone-paper-edge), inset 0 -1px 0 var(--tone-paper-edge);
 }
-
-.theme-shadow-lg {
-  box-shadow: 0 10px 15px -3px var(--shadow-lg), 0 -3px 6px -2px var(--shadow-lg);
-}
-
-.theme-border {
-  border-color: var(--border-color);
-}
-
-[data-theme='retro'] .theme-border {
-  border: 2px solid var(--border-color);
-}
-
-[data-theme='dark'] .bg-card {
-  background-color: #0F172A;
-  border: none;
-}
-
-[data-theme='light'] .bg-card {
-  border: none;
-  background-color: #ffffff;
-
-}
-
-[data-theme='light'] .resume-border {
-  border: 1px solid rgb(235, 225, 225);
-
-}
-
-[data-theme='dark'] .resume-border {
-  border: 1px solid #334155;
-
-}
-
-[data-theme='retro'] .bg-card {
-  background-color: #FEF3C7;
-
-}
-
-[data-theme='retro'] .theme-logo {
-  text-shadow: 3px 3px 0px #f59e0b;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 2px;
-}
-
-[data-theme='light'] .theme-resume-card {
-
-  background: var(--theme-resume-card);
-
-}
-
-[data-theme='dark'] .theme-resume-card {
-
-  background: var(--theme-resume-card);
-
-}
-
-[data-theme='retro'] .theme-resume-card {
-
-  background: var(--theme-resume-card);
-  border: 2px solid rgb(230, 34, 34)
-}
-
-[data-theme='futuristic'] .theme-logo {
-  text-shadow: 0 0 10px var(--bg-accent), 0 0 20px var(--bg-accent);
-  font-family: 'Courier New', monospace;
-  letter-spacing: 4px;
-  animation: glow 2s ease-in-out infinite alternate;
-}
-
-[data-theme='futuristic'] .theme-card-glow {
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), inset 0 0 20px rgba(0, 255, 65, 0.1);
-  border: 2px solid var(--border-color);
-  animation: pulse-border 3s ease-in-out infinite;
-}
-
-[data-theme='futuristic'] .scan-line {
+.tone-ink {
   position: relative;
+  isolation: isolate;
+  color: var(--text-primary);
+  background-color: var(--ink-bg);
+}
+// Glows sit inside the band and the band fades in and out of the page colour, so there is no seam
+.tone-ink::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(45% 35% at 18% 32%, var(--ink-glow-a), transparent 72%),
+    radial-gradient(40% 35% at 88% 58%, var(--ink-glow-b), transparent 72%);
+}
+// The band melts into the page above and below, in both themes
+.tone-ink::before {
+  background:
+    radial-gradient(45% 35% at 18% 32%, var(--ink-glow-a), transparent 72%),
+    radial-gradient(40% 35% at 88% 58%, var(--ink-glow-b), transparent 72%),
+    linear-gradient(to bottom, var(--page-bg) 0, transparent 220px, transparent calc(100% - 220px), var(--page-bg) 100%);
+}
+.tone-ink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, transparent 0, #000 260px, #000 40%, transparent 85%);
+}
+
+/* ---------- surfaces ---------- */
+
+// Elevated panel: demos, terminal, graph
+.bw-panel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 var(--panel-highlight), var(--shadow-panel);
+}
+
+// Fine grid that fades out from the centre
+.bw-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center top;
+}
+
+// Hero: grid + accent glow + a spotlight that follows the cursor (--mx / --my set by Spotlight.tsx)
+.bw-hero {
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
 }
-
-[data-theme='futuristic'] .scan-line::before {
-  content: '';
+.bw-hero::before {
+  content: "";
   position: absolute;
-  top: 0;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 30%, transparent 75%);
+}
+.bw-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(600px circle at var(--mx, 70%) var(--my, 20%), var(--accent-glow), transparent 60%),
+    radial-gradient(50% 45% at 85% 0%, var(--accent-glow), transparent 70%);
+  transition: background 0.2s;
+  pointer-events: none;
+}
+
+/* ---------- controls ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  background: var(--accent-solid);
+  color: var(--accent-solid-fg);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, var(--shadow-float);
+}
+.btn-primary:hover { box-shadow: 0 0 0 4px var(--accent-glow), var(--shadow-float); }
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.btn-secondary:hover { border-color: var(--border-strong); background: var(--bg-subtle); }
+
+// Section kicker: number, label, short rule
+.bw-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.bw-kicker::after {
+  content: "";
+  width: 2.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent-bright), transparent);
+}
+
+// Small status pill
+.bw-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-float);
+}
+
+// Underline that grows on hover
+.bw-link {
+  background-image: linear-gradient(var(--bw-accent), var(--bw-accent));
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease, color 0.15s ease;
+}
+.bw-link:hover { background-size: 100% 1px; color: var(--bw-accent); }
+
+// Hoverable term in the hero: dotted underline + tooltip
+.bw-term {
+  position: relative;
+  text-decoration: underline dotted color-mix(in srgb, var(--accent-bright) 70%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+  cursor: help;
+  transition: color 0.15s ease;
+}
+.bw-term:hover { color: var(--bw-accent); }
+.bw-term .bw-tip {
+  position: absolute;
   left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--bg-accent), transparent);
-  animation: scan 3s linear infinite;
+  top: calc(100% + 12px);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: var(--shadow-float);
+}
+.bw-term:hover .bw-tip,
+.bw-term:focus .bw-tip { opacity: 1; transform: translateY(0); }
+
+.bw-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  vertical-align: text-bottom;
+  background: var(--accent-bright);
+  animation: bw-blink 1s steps(1) infinite;
+}
+@keyframes bw-blink { 50% { opacity: 0; } }
+
+details.bw-row > summary { list-style: none; }
+details.bw-row > summary::-webkit-details-marker { display: none; }
+details.bw-row[open] .bw-chevron { transform: rotate(45deg); }
+
+.bw-chip { transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease; }
+.bw-chip:hover,
+.bw-hover-accent:hover { color: var(--text-primary); border-color: var(--border-strong); background-color: var(--bg-subtle); }
+.bw-row-link { transition: background-color 0.15s ease; }
+.bw-row-link:hover { background-color: var(--bg-subtle); }
+.group:hover .bw-group-accent { color: var(--bw-accent); }
+
+// Reveal on scroll (Reveal.tsx adds .is-in): a short rise while a slight blur clears
+.bw-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(6px);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+// once shown, drop will-change too: it would make this box the frame for position: fixed children
+// (e.g. the project preview that follows the cursor)
+.bw-reveal.is-in { opacity: 1; transform: none; filter: none; will-change: auto; }
+
+// Staggered lists: the container stays put and items marked data-stagger arrive one after another (--i = index)
+.bw-reveal.bw-stagger { opacity: 1; transform: none; filter: none; }
+.bw-stagger [data-stagger] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.bw-stagger.is-in [data-stagger] { opacity: 1; transform: none; }
+
+// Active edge in the agent graph: dashes flowing toward the arrow
+.bw-edge-flow {
+  stroke-dasharray: 7 5;
+  animation: bw-flow 0.6s linear infinite;
+}
+@keyframes bw-flow { to { stroke-dashoffset: -12; } }
+
+// HTML project descriptions (lists and emphasis)
+.bw-prose ul { list-style: disc; padding-left: 1.25rem; }
+.bw-prose li { margin-top: 0.4rem; }
+.bw-prose li::marker { color: var(--accent-bright); }
+.bw-prose strong { color: var(--text-primary); font-weight: 600; }
+
+// Thin, quiet scrollbars inside panels
+.bw-panel ::-webkit-scrollbar { width: 8px; height: 8px; }
+.bw-panel ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+.bw-panel ::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bw-caret, .bw-edge-flow { animation: none; }
+  .bw-reveal, .bw-stagger [data-stagger] { opacity: 1; transform: none; filter: none; transition: none; }
+  .bw-hero::after { transition: none; }
 }
 
-[data-theme='retro'] .retro-border {
-  border: 4px solid var(--border-color);
-  box-shadow: 8px 8px 0px var(--bg-accent);
+// On paper sections the hover surface is the card colour, so it stays visible
+.tone-paper .bw-row-link:hover { background-color: var(--bg-card); }
+
+// A small, calm nudge on an arrow until the visitor tries the control once
+.bw-nudge { animation: bw-nudge 1.6s ease-in-out infinite; }
+@keyframes bw-nudge { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(3px); } }
+@media (prefers-reduced-motion: reduce) { .bw-nudge { animation: none; } }
+
+// "How it works": an inviting gradient border that slowly turns (not selected) ...
+@property --bw-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.bw-glow-border {
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+    conic-gradient(from var(--bw-angle), var(--accent-bright), #8b7bff, #ff8fc7, var(--accent-bright)) border-box;
+  animation: bw-turn 4s linear infinite;
+  box-shadow: 0 6px 18px -10px var(--accent-bright);
+}
+.bw-glow-border:hover { box-shadow: 0 0 0 4px var(--accent-glow), 0 8px 22px -10px var(--accent-bright); }
+@keyframes bw-turn { to { --bw-angle: 360deg; } }
+
+// ... and a clearly "on" look once open
+.bw-btn-selected {
+  border: 1.5px solid var(--accent-bright);
+  background: color-mix(in srgb, var(--accent-bright) 16%, var(--bg-card));
+  color: var(--bw-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-bright) 25%, transparent);
 }
 
-[data-theme='retro'] .retro-button {
-  border: 3px solid var(--text-primary);
-  box-shadow: 4px 4px 0px var(--text-primary);
-  transition: all 0.1s;
-  color: #78350f;
+// A soft band of light that sweeps across an unselected tab now and then, so it reads as "there's more here"
+// without looking selected (no border, no fill)
+.bw-shimmer { position: relative; overflow: hidden; isolation: isolate; }
+.bw-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--accent-bright) 30%, transparent) 50%, transparent 70%);
+  background-size: 250% 100%;
+  background-position: 150% 0;
+  animation: bw-shimmer 3.2s ease-in-out 1s infinite;
+}
+@keyframes bw-shimmer {
+  0% { background-position: 150% 0; }
+  45%, 100% { background-position: -50% 0; }
 }
 
-[data-theme='retro'] .retro-button:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px var(--text-primary);
+@media (prefers-reduced-motion: reduce) { .bw-glow-border, .bw-shimmer::after { animation: none; } }
+
+// Travelling light on hairline separators. .bw-beam-x: along the element's top border.
+// .bw-beam-cols: down the vertical dividers between its children (md and up, where divide-x shows).
+// Each line carries two lights with unrelated durations (11s, 16s, 13s, 19s, 17s, 23s), so they drift apart
+// and the pattern never repeats in an obvious way; negative delays start them mid-flight.
+.bw-beam-x { position: relative; }
+.bw-beam-x::before,
+.bw-beam-x::after,
+.bw-beam-cols > * + *::before,
+.bw-beam-cols > * + *::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 0 10px 0.5px color-mix(in srgb, var(--accent-bright) 50%, transparent);
+}
+.bw-beam-x::before,
+.bw-beam-x::after {
+  top: -1px;
+  height: 1px;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+  animation: bw-beam-x 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.bw-beam-x::before { animation-delay: -3s; }
+.bw-beam-x::after { width: 12%; animation-duration: 16s; animation-delay: -10s; animation-direction: reverse; }
+@keyframes bw-beam-x {
+  0% { left: -18%; opacity: 0; }
+  12% { opacity: 0.9; }
+  78% { opacity: 0.9; }
+  100% { left: 100%; opacity: 0; }
 }
 
-[data-theme='retro'] .theme-retro-resume {
-  background-color: #ffefef !important;
-}
-
-
-
-[data-theme='light'] .theme-retro-resume {
-  background-color: #F8FAFC !important
-}
-
-@keyframes glow {
-  from {
-    text-shadow: 0 0 10px var(--bg-accent), 0 0 20px var(--bg-accent), 0 0 30px var(--bg-accent);
+@media (min-width: 768px) {
+  .bw-beam-cols > * { position: relative; }
+  .bw-beam-cols > * + *::before,
+  .bw-beam-cols > * + *::after {
+    left: -1px;
+    width: 1px;
+    height: 24%;
+    background: linear-gradient(180deg, transparent, var(--accent-bright), transparent);
+    animation: bw-beam-y 13s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   }
-
-  to {
-    text-shadow: 0 0 20px var(--bg-accent), 0 0 30px var(--bg-accent), 0 0 40px var(--bg-accent);
-  }
+  .bw-beam-cols > * + *::before { animation-delay: -5s; }
+  .bw-beam-cols > * + *::after { height: 16%; animation-duration: 19s; animation-delay: -14s; animation-direction: reverse; }
+  .bw-beam-cols > * + * + *::before { animation-duration: 17s; animation-delay: -1s; }
+  .bw-beam-cols > * + * + *::after { animation-duration: 23s; animation-delay: -8s; }
+}
+@keyframes bw-beam-y {
+  0% { top: -24%; opacity: 0; }
+  12% { opacity: 0.9; }
+  78% { opacity: 0.9; }
+  100% { top: 100%; opacity: 0; }
 }
 
-@keyframes pulse-border {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), inset 0 0 20px rgba(0, 255, 65, 0.1);
-  }
-
-  50% {
-    box-shadow: 0 0 40px rgba(0, 255, 65, 0.5), inset 0 0 30px rgba(0, 255, 65, 0.2);
-  }
+@media (prefers-reduced-motion: reduce) {
+  .bw-beam-x::before, .bw-beam-x::after, .bw-beam-cols > *::before, .bw-beam-cols > *::after { animation: none; opacity: 0; }
 }
 
-@keyframes scan {
-  0% {
-    transform: translateY(0);
-  }
-
-  100% {
-    transform: translateY(100vh);
-  }
+// LLM answers rendered from Markdown (ScholarLens demo)
+.bw-answer { font-size: 0.925rem; line-height: 1.7; }
+.bw-answer > * + * { margin-top: 0.7rem; }
+.bw-answer h1, .bw-answer h2, .bw-answer h3, .bw-answer h4 { font-weight: 600; font-size: 0.95rem; margin-top: 1rem; }
+.bw-answer strong { font-weight: 600; color: var(--text-primary); }
+.bw-answer ul, .bw-answer ol { padding-left: 1.2rem; }
+.bw-answer ul { list-style: disc; }
+.bw-answer ol { list-style: decimal; }
+.bw-answer li + li { margin-top: 0.35rem; }
+.bw-answer li::marker { color: var(--accent-bright); }
+.bw-answer code { font-family: var(--font-geist-mono), monospace; font-size: 0.85em; padding: 0.1em 0.35em; border-radius: 4px; background: var(--bg-subtle); }
+.bw-answer .katex-display {
+  margin: 0.8rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
+  overflow-y: hidden;
 }
-
-.gradient-text {
-  background: linear-gradient(135deg, var(--bg-accent), var(--text-primary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-[data-theme='futuristic'] .gradient-text {
-  background: linear-gradient(135deg, #00ff41, #00ffff, #00ff41);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: glow 2s ease-in-out infinite alternate;
+.bw-answer .katex { font-size: 1.05em; }
+// a blinking caret after the last line while the answer is still arriving
+.bw-answer.is-streaming > :last-child::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--accent-bright);
+  animation: bw-blink 1s steps(1) infinite;
 }
