@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# in-browser vision runtimes, copied from node_modules on install
+/public/vendor/
+
+# visitor analytics log (has visitor IPs and messages)
+/.data/

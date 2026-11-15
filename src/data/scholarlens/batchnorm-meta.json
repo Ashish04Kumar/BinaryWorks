@@ -1,0 +1,9 @@
+{
+ "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+ "authors": "Sergey Ioffe, Christian Szegedy",
+ "year": 2015,
+ "arxiv": "1502.03167",
+ "url": "https://arxiv.org/abs/1502.03167",
+ "pages": 11,
+ "chunkCount": 61
+}

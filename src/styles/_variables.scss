@@ -1,90 +1,81 @@
+// Design tokens. The accent is Glitch's face cyan (#5ce1ff); light mode uses a deeper teal of it for contrast.
+
 [data-theme='light'] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-nav: rgba(255, 255, 255, 0.95);
+  color-scheme: light;
+
+  --bg-primary: #fafaf9;
   --bg-card: #ffffff;
-  --bg-hover: #f1f5f9;
-  --bg-footer: #f8fafc;
-  --bg-accent: #3b82f6;
+  --bg-subtle: #f3f3f1;
+  --bg-nav: rgba(250, 250, 249, 0.86);
 
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-accent: #ffffff;
+  --text-primary: #0b0d10;
+  --text-secondary: #5b616d;
+  --text-tertiary: #8b909a;
 
-  --border-color: #e2e8f0;
-  --shadow: rgba(0, 0, 0, 0.1);
-  --shadow-lg: rgba(0, 0, 0, 0.15);
-  --readmore-btn: linear-gradient(90deg, #f97316 0%, #fb923c 100%);
-  --readmore-txt: #ffffff;
-  --theme-resume-card: #ffffff
+  --border-color: rgba(11, 13, 16, 0.08);
+  --border-strong: rgba(11, 13, 16, 0.16);
 
+  --bw-accent: #0e7490;
+  --accent-bright: #0891b2;
+  --accent-glow: rgba(8, 145, 178, 0.16);
+  --accent-solid: #0b0d10;
+  --accent-solid-fg: #ffffff;
 
+  --grid-line: rgba(11, 13, 16, 0.055);
+  --shadow-panel: 0 1px 2px rgba(11, 13, 16, 0.04), 0 12px 32px -16px rgba(11, 13, 16, 0.16);
+  --shadow-float: 0 1px 2px rgba(11, 13, 16, 0.05), 0 8px 24px -10px rgba(11, 13, 16, 0.18);
+  --panel-highlight: rgba(255, 255, 255, 0.9);
+}
+
+@mixin dark-tokens {
+  color-scheme: dark;
+
+  --bg-primary: #08090b;
+  --bg-card: #0e1013;
+  --bg-subtle: #14171b;
+  --bg-nav: rgba(12, 14, 17, 0.66);
+
+  --text-primary: #ededef;
+  --text-secondary: #a0a5ae;
+  --text-tertiary: #6b707a;
+
+  --border-color: rgba(255, 255, 255, 0.075);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  --bw-accent: #5ce1ff;
+  --accent-bright: #5ce1ff;
+  --accent-glow: rgba(92, 225, 255, 0.13);
+  --accent-solid: #ededef;
+  --accent-solid-fg: #08090b;
+
+  --grid-line: rgba(255, 255, 255, 0.045);
+  --shadow-panel: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+  --shadow-float: 0 8px 30px -10px rgba(0, 0, 0, 0.7);
+  --panel-highlight: rgba(255, 255, 255, 0.05);
 }
 
 [data-theme='dark'] {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-nav: rgba(15, 23, 42, 0.95);
-  --bg-card: #1e293b;
-  --bg-hover: #334155;
-  --bg-footer: #1e293b;
-  --bg-accent: #2160c4;
-
-  --text-primary: #dde1e9;
-  --text-secondary: #dde1e9;
-  --text-accent: #ffffff;
-
-  --border-color: #334155;
-  --shadow: rgba(0, 0, 0, 0.3);
-  --shadow-lg: rgba(0, 0, 0, 0.5);
-  --readmore-btn: linear-gradient(90deg, #d97706 0%, #b45309 100%);
-  --readmore-txt: #ffffff;
-  --theme-resume-card: #0f172a
-
-
+  @include dark-tokens;
 }
 
-[data-theme='retro'] {
-  --bg-primary: #fef3c7;
-  --bg-secondary: #fde68a;
-  --bg-nav: rgba(254, 243, 199, 0.95);
-  --bg-card: #fef3c7;
-  --bg-hover: #fde047;
-  --bg-footer: #fde68a;
-  --bg-accent: #f59e0b;
 
-  --text-primary: #78350f;
-  --text-secondary: #92400e;
-  --text-accent: #ffffff;
+// ---------- section tones ----------
+// paper: a quieter surface for alternating sections
+[data-theme='light'] { --page-bg: #fafaf9; --tone-paper: #f3f2ee; --tone-paper-edge: rgba(11, 13, 16, 0.05); }
+[data-theme='dark'] { --page-bg: #08090b; --tone-paper: #0c0e11; --tone-paper-edge: rgba(255, 255, 255, 0.04); }
 
-  --border-color: #fbbf24;
-  --shadow: rgba(245, 158, 11, 0.2);
-  --shadow-lg: rgba(245, 158, 11, 0.3);
-  --readmore-btn: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
-  --readmore-txt: #78350f;
-  --theme-resume-card: #faf7f7
-
-
+// feature band (AI lab, contact): a cyan-tinted light band in light mode, a deep ink band in dark mode
+[data-theme='light'] .tone-ink {
+  --ink-bg: #eef5f6;
+  --ink-glow-a: rgba(8, 145, 178, 0.14);
+  --ink-glow-b: rgba(99, 102, 241, 0.08);
+  --bg-card: #ffffff;
 }
-
-[data-theme='futuristic'] {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-nav: rgba(0, 0, 0, 0.95);
-  --bg-card: #0a0a0a;
-  --bg-hover: #1a1a1a;
-  --bg-footer: #0a0a0a;
-  --bg-accent: #00ff41;
-
-  --text-primary: #00ff41;
-  --text-secondary: #00d936;
-  --text-accent: #000000;
-
-  --border-color: #00ff41;
-  --shadow: rgba(0, 255, 65, 0.2);
-  --shadow-lg: rgba(0, 255, 65, 0.4);
-  --readmore-btn: linear-gradient(90deg, #00ff41 0%, #00d936 100%);
-  --readmore-txt: #000000;
-
-
+[data-theme='dark'] .tone-ink {
+  @include dark-tokens;
+  --bg-primary: #05070a;
+  --bg-card: #0b0f14;
+  --ink-bg: #05070a;
+  --ink-glow-a: rgba(92, 225, 255, 0.16);
+  --ink-glow-b: rgba(124, 92, 255, 0.10);
 }

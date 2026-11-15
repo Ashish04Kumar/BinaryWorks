@@ -36,10 +36,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   const getModalBg = () => {
     switch (theme) {
-      case "retro":
-        return "bg-[#fdf6e3] border-2 border-black";
-      case "futuristic":
-        return "bg-[#0b1220] shadow-[0_0_20px_#872DCB]";
       case "dark":
         return "bg-[rgb(30,41,59)]";
       default:
@@ -49,10 +45,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   const getHeaderText = () => {
     switch (theme) {
-      case "retro":
-        return "text-black";
-      case "futuristic":
-        return "text-[#fb923c]";
       case "dark":
         return "text-gray-100";
       default:
@@ -62,10 +54,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   const getCloseColor = () => {
     switch (theme) {
-      case "retro":
-        return "text-black";
-      case "futuristic":
-        return "text-[#fb923c]";
       case "dark":
         return "text-gray-200";
       default:
@@ -75,10 +63,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   const getSlideBg = () => {
     switch (theme) {
-      case "retro":
-        return "bg-[#fff4e6] border-2 border-black";
-      case "futuristic":
-        return "bg-[#111827] border border-[#872DCB]";
       case "dark":
         return "bg-white/5";
       default:
@@ -88,10 +72,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   const getSlideText = () => {
     switch (theme) {
-      case "retro":
-        return "text-black";
-      case "futuristic":
-        return "text-[#fb923c]";
       case "dark":
         return "text-gray-200";
       default:
@@ -110,11 +90,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
       >
         <div
           className={`flex items-center justify-between px-6 py-4 border-b ${
-            theme === "retro"
-              ? "border-black"
-              : theme === "futuristic"
-              ? "border-[#872DCB]"
-              : theme === "dark"
+            theme === "dark"
               ? "border-gray-700"
               : "border-gray-200"
           }`}
@@ -130,7 +106,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
           </button>
         </div>
 
-        <div className="p-4 overflow-auto max-h-[85vh] flex-1">
+        <div data-lenis-prevent className="p-4 overflow-auto max-h-[85vh] flex-1">
           <Swiper
             modules={[Navigation, Pagination]}
             navigation
@@ -166,11 +142,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         </div>
         <div
           className={`px-6 py-4 border-t ${
-            theme === "retro"
-              ? "border-black"
-              : theme === "futuristic"
-              ? "border-[#872DCB]"
-              : theme === "dark"
+            theme === "dark"
               ? "border-gray-700"
               : "border-gray-200"
           }`}
