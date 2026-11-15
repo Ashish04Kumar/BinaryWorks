@@ -2,6 +2,7 @@
 // The server adds who it came from (IP, country, browser); the page can't fake those.
 import { record, type EventType, type StoredEvent } from "@/lib/analytics/store";
 import { isOwner, visitorOf } from "@/lib/analytics/server";
+import { analyticsEnabled } from "@/lib/analytics/enabled";
 
 const ALLOWED: EventType[] = ["session_start", "section", "click", "activity", "leave"];
 const MAX_EVENTS = 50;
@@ -19,7 +20,7 @@ function clean(data: unknown): Record<string, unknown> {
 }
 
 export async function POST(req: Request) {
-  if (isOwner(req)) return new Response(null, { status: 204 });
+  if (!analyticsEnabled || isOwner(req)) return new Response(null, { status: 204 });
   const body = await req.json().catch(() => null);
   const list: unknown[] = Array.isArray(body?.events) ? body.events.slice(0, MAX_EVENTS) : [];
   const who = visitorOf(req);

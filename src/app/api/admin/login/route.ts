@@ -1,7 +1,9 @@
 import { ADMIN_COOKIE, SESSION_DAYS, adminConfigured, checkLogin, createSession, loginAllowed, loginFailed } from "@/lib/admin/auth";
 import { ipOf, NO_TRACK_COOKIE } from "@/lib/analytics/server";
+import { analyticsEnabled } from "@/lib/analytics/enabled";
 
 export async function POST(req: Request) {
+  if (!analyticsEnabled) return new Response(null, { status: 404 });
   if (!adminConfigured()) return Response.json({ error: "Admin login isn't set up on this server." }, { status: 503 });
   const ip = ipOf(req);
   if (!loginAllowed(ip)) return Response.json({ error: "Too many attempts. Try again in 15 minutes." }, { status: 429 });

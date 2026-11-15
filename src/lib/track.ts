@@ -2,6 +2,8 @@
 // The visitor id lives in the browser (localStorage + cookie) so repeat visits group together; the session id
 // is per tab. Both are cookies too, so the demo APIs can tie LLM calls to the same visitor.
 
+import { analyticsEnabled } from "./analytics/enabled";
+
 type Pending = { type: string; t: number; data?: Record<string, unknown> };
 
 const queue: Pending[] = [];
@@ -14,9 +16,9 @@ function setCookie(name: string, value: string, maxAgeDays?: number) {
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; samesite=lax${age}`;
 }
 
-/** Off for the site owner (logged in to /admin) and on the admin page itself. */
+/** Off when analytics is switched off, for the site owner (logged in to /admin) and on the admin page itself. */
 export function trackingOff() {
-  if (typeof window === "undefined") return true;
+  if (!analyticsEnabled || typeof window === "undefined") return true;
   return document.cookie.includes("bw_notrack=1") || location.pathname.startsWith("/admin");
 }
 
