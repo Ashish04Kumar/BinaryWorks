@@ -45,3 +45,4 @@ next-env.d.ts
 
 # visitor analytics log (has visitor IPs and messages)
 /.data/
+!.env.example

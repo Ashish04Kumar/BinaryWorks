@@ -1,5 +1,6 @@
 // Who is asking: IP, country and browser from the request, and the visitor/session ids the page keeps in cookies.
 import { record, type StoredEvent } from "./store";
+import { analyticsEnabled } from "./enabled";
 
 export const VID_COOKIE = "bw_vid";
 export const SID_COOKIE = "bw_sid";
@@ -39,7 +40,7 @@ export async function logLlm(
   req: Request,
   call: { endpoint: string; input: string; output: string; ms: number; ok: boolean; extra?: Record<string, unknown> }
 ) {
-  if (isOwner(req)) return;
+  if (!analyticsEnabled || isOwner(req)) return;
   const e: StoredEvent = {
     t: Date.now(),
     type: "llm",

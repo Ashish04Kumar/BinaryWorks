@@ -2,6 +2,7 @@
 // LLM calls and a timeline of what they did. Admin only.
 import { sessionFrom } from "@/lib/admin/auth";
 import { readRecent, type StoredEvent } from "@/lib/analytics/store";
+import { analyticsEnabled } from "@/lib/analytics/enabled";
 
 function device(ua = "") {
   const browser = /Edg\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" : /Firefox\//.test(ua) ? "Firefox" : /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : "Other";
@@ -45,6 +46,7 @@ function describe(e: StoredEvent): string {
 }
 
 export async function GET(req: Request) {
+  if (!analyticsEnabled) return new Response(null, { status: 404 });
   if (!sessionFrom(req)) return Response.json({ error: "Not logged in." }, { status: 401 });
   const days = Math.min(30, Math.max(1, Number(new URL(req.url).searchParams.get("days")) || 7));
   const events = await readRecent(days);
