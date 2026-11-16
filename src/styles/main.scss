@@ -541,3 +541,161 @@ details.bw-row[open] .bw-chevron { transform: rotate(45deg); }
 @media (prefers-reduced-motion: reduce) {
   .bw-coach-veil, .bw-coach-tip, .bw-coach-target { animation: none; }
 }
+
+// ---------- navbar ----------
+// The floating bar: tightens when the page is scrolled, with the page's progress along its bottom edge
+.bw-nav {
+  max-width: 72rem;
+  transition: max-width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1), height 0.35s ease, box-shadow 0.35s ease;
+}
+.bw-nav.is-compact { max-width: 46rem; height: 3.1rem; }
+.bw-nav-sub { max-height: 1rem; transition: max-height 0.3s ease, opacity 0.25s ease; overflow: hidden; }
+.bw-nav.is-compact .bw-nav-sub { max-height: 0; opacity: 0; }
+
+// The mark: Glitch's eyes on its dark display. They follow the cursor (--ex/--ey set in JS) and blink.
+.bw-nav-eyes {
+  background: #0b0d10;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, width 0.35s ease, height 0.35s ease;
+  > span { transform: translate(var(--ex, 0px), var(--ey, 0px)); transition: transform 0.12s ease-out; }
+  i {
+    display: block;
+    width: 7px;
+    height: 11px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #d6ccff, #8b7cf0);
+    box-shadow: 0 0 6px rgba(139, 124, 240, 0.7);
+    animation: bw-nav-blink 5.5s ease-in-out infinite;
+  }
+}
+.bw-nav.is-compact .bw-nav-eyes { width: 2.25rem; height: 2.25rem; }
+a:hover > .bw-nav-eyes { transform: scale(1.06); }
+a:hover > .bw-nav-eyes i { animation-duration: 1.4s; } // a quick double-take when you reach for it
+@keyframes bw-nav-blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.12); } }
+
+// One pill that glides between the links
+.bw-nav-pill {
+  background: var(--bg-subtle);
+  box-shadow: inset 0 0 0 1px var(--border-color);
+  transition: left 0.38s cubic-bezier(0.2, 0.9, 0.25, 1.1), width 0.38s cubic-bezier(0.2, 0.9, 0.25, 1.1);
+}
+// a small accent dot under the current page
+.bw-nav-dot {
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+  box-shadow: 0 0 6px var(--accent-bright);
+}
+
+// theme toggle: the icon turns in
+.bw-nav-theme-icon { animation: bw-nav-turn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1.2); }
+@keyframes bw-nav-turn { from { transform: rotate(-90deg) scale(0.5); opacity: 0; } to { transform: none; opacity: 1; } }
+
+// page progress: a hairline along the bar's bottom edge, clipped to its rounded shape
+.bw-nav-progress {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  > span {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(var(--p, 0));
+    background: linear-gradient(90deg, transparent, var(--accent-bright));
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bw-nav, .bw-nav-pill, .bw-nav-eyes, .bw-nav-eyes > span { transition: none; }
+  .bw-nav-eyes i, .bw-nav-theme-icon { animation: none; }
+}
+
+// Dark mode: a faint cyan and violet glow behind the page, so plain areas aren't a flat dark sheet
+[data-theme='dark'] body {
+  background-image:
+    radial-gradient(1100px 650px at 8% -8%, rgba(92, 225, 255, 0.055), transparent 62%),
+    radial-gradient(1000px 700px at 100% 12%, rgba(124, 92, 255, 0.07), transparent 62%);
+  background-attachment: fixed;
+}
+
+// Tiny robots strolling along the navbar's bottom edge (positions set in NavBots.tsx)
+.bw-bots {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.bw-bot {
+  position: absolute;
+  left: 0;
+  bottom: 5px;
+  width: 14px;
+  height: 16px;
+  will-change: transform;
+  // the body (with two eyes) on two little legs; the antenna is i::after
+  i {
+    position: absolute;
+    left: 0;
+    bottom: 3px;
+    width: 14px;
+    height: 10.5px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--accent-bright) 14%, var(--bg-card));
+    box-shadow: inset 0 0 0 1.25px color-mix(in srgb, var(--accent-bright) 45%, var(--border-strong));
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+  }
+  i::before { // eyes
+    content: "";
+    position: absolute;
+    left: 5.5px;
+    top: 3.5px;
+    width: 2.5px;
+    height: 2.5px;
+    border-radius: 50%;
+    background: var(--accent-bright);
+    box-shadow: 4px 0 0 var(--accent-bright), 0 0 4px var(--accent-bright), 4px 0 4px var(--accent-bright);
+  }
+  i::after { // antenna
+    content: "";
+    position: absolute;
+    left: 6.5px;
+    top: -4px;
+    width: 1.25px;
+    height: 3.5px;
+    background: color-mix(in srgb, var(--accent-bright) 45%, var(--border-strong));
+    box-shadow: 0 -1.75px 0 0.75px var(--accent-bright);
+  }
+  &::before, &::after { // legs
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 2.25px;
+    height: 3px;
+    border-radius: 1px;
+    background: color-mix(in srgb, var(--text-primary) 40%, transparent);
+  }
+  &::before { left: 3px; }
+  &::after { right: 3px; }
+}
+.bw-bot.is-walking::before { animation: bw-bot-step 0.36s ease-in-out infinite; }
+.bw-bot.is-walking::after { animation: bw-bot-step 0.36s ease-in-out infinite -0.18s; }
+.bw-bot.is-walking i { animation: bw-bot-bob 0.36s ease-in-out infinite; }
+// noticed the cursor: looks up, eyes glow
+.bw-bot.is-curious i { transform: rotate(-10deg) translateY(-0.5px); box-shadow: inset 0 0 0 1px var(--accent-bright), 0 0 8px color-mix(in srgb, var(--accent-bright) 55%, transparent); }
+.bw-bot.is-hop i { animation: bw-bot-hop 0.45s cubic-bezier(0.3, 0, 0.3, 1); }
+@keyframes bw-bot-step { 50% { height: 1.5px; } }
+@keyframes bw-bot-bob { 50% { translate: 0 -0.7px; } }
+@keyframes bw-bot-hop { 40% { translate: 0 -6px; } 100% { translate: 0 0; } }

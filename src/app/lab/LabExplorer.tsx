@@ -13,7 +13,6 @@ import Highlight from "../components/ui/Highlight";
 
 const labs = aiWork.filter((w) => w.demo && w.lab);
 type Key = NonNullable<(typeof labs)[number]["demo"]>;
-const pad = (n: number) => String(n).padStart(2, "0");
 
 const LabExplorer = () => {
   const [key, setKey] = useState<Key>(labs[0].demo!);
@@ -80,7 +79,7 @@ const LabExplorer = () => {
             labs.length >= 4 ? "md:grid-cols-4" : labs.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2"
           }`}
         >
-          {labs.map((l, i) => {
+          {labs.map((l) => {
             const active = l.demo === key;
             const Art = ART[l.demo!] ?? DefaultArt;
             return (
@@ -89,18 +88,14 @@ const LabExplorer = () => {
                 role="tab"
                 aria-selected={active}
                 aria-controls="l2-view"
-                onClick={() => select(l.demo!)}
+                onClick={() => select(l.demo!, true)}
                 className={`l2-work group snap-start shrink-0 w-[80%] sm:w-[46%] md:w-auto text-left ${active ? "is-active" : ""}`}
               >
                 <span className="l2-art-wrap block">
                   <Art />
                 </span>
                 <span className="l2-label block">
-                  <span className="flex items-baseline justify-between gap-3">
-                    <span className="font-mono text-[11px] bw-faint">{pad(i + 1)}</span>
-                    <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${active ? "l2-accent" : "bw-faint"}`}>{active ? "open below ↓" : "try it"}</span>
-                  </span>
-                  <span className="block text-xl font-semibold tracking-tight mt-1">{l.name}</span>
+                  <span className="block text-xl font-semibold tracking-tight">{l.name}</span>
                   <span className="block font-mono text-[11px] l2-accent mt-0.5">{l.lab!.kind}</span>
                   <span className="block text-sm bw-muted leading-relaxed mt-2">{l.lab!.oneLiner}</span>
                 </span>
