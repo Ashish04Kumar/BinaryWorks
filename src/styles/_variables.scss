@@ -30,28 +30,29 @@
 @mixin dark-tokens {
   color-scheme: dark;
 
-  --bg-primary: #08090b;
-  --bg-card: #0e1013;
-  --bg-subtle: #14171b;
-  --bg-nav: rgba(12, 14, 17, 0.66);
+  // deep ink with a little blue in it (not flat black), and clear steps between page, card and inset
+  --bg-primary: #0e1219;
+  --bg-card: #161b26;
+  --bg-subtle: #1e2432;
+  --bg-nav: rgba(20, 25, 35, 0.72);
 
-  --text-primary: #ededef;
-  --text-secondary: #a0a5ae;
-  --text-tertiary: #6b707a;
+  --text-primary: #eef0f4;
+  --text-secondary: #a9afbc;
+  --text-tertiary: #747b89;
 
-  --border-color: rgba(255, 255, 255, 0.075);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-color: rgba(200, 215, 255, 0.09);
+  --border-strong: rgba(200, 215, 255, 0.17);
 
   --bw-accent: #5ce1ff;
   --accent-bright: #5ce1ff;
   --accent-glow: rgba(92, 225, 255, 0.13);
-  --accent-solid: #ededef;
-  --accent-solid-fg: #08090b;
+  --accent-solid: #eef0f4;
+  --accent-solid-fg: #0e1219;
 
-  --grid-line: rgba(255, 255, 255, 0.045);
-  --shadow-panel: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
-  --shadow-float: 0 8px 30px -10px rgba(0, 0, 0, 0.7);
-  --panel-highlight: rgba(255, 255, 255, 0.05);
+  --grid-line: rgba(200, 215, 255, 0.05);
+  --shadow-panel: 0 0 0 1px rgba(255, 255, 255, 0.025), 0 24px 48px -24px rgba(0, 0, 0, 0.65);
+  --shadow-float: 0 8px 30px -10px rgba(0, 0, 0, 0.6);
+  --panel-highlight: rgba(255, 255, 255, 0.07);
 }
 
 [data-theme='dark'] {
@@ -62,7 +63,7 @@
 // ---------- section tones ----------
 // paper: a quieter surface for alternating sections
 [data-theme='light'] { --page-bg: #fcfcfb; --tone-paper: #f6f5f2; --tone-paper-edge: rgba(11, 13, 16, 0.045); }
-[data-theme='dark'] { --page-bg: #08090b; --tone-paper: #0c0e11; --tone-paper-edge: rgba(255, 255, 255, 0.04); }
+[data-theme='dark'] { --page-bg: #0e1219; --tone-paper: #121722; --tone-paper-edge: rgba(200, 215, 255, 0.05); }
 
 // feature band (AI lab, contact): a cyan-tinted light band in light mode, a deep ink band in dark mode
 [data-theme='light'] .tone-ink {
@@ -73,9 +74,9 @@
 }
 [data-theme='dark'] .tone-ink {
   @include dark-tokens;
-  --bg-primary: #05070a;
-  --bg-card: #0b0f14;
-  --ink-bg: #05070a;
-  --ink-glow-a: rgba(92, 225, 255, 0.16);
-  --ink-glow-b: rgba(124, 92, 255, 0.10);
+  --bg-primary: #0a0e15;
+  --bg-card: #131924;
+  --ink-bg: #0a0e15;
+  --ink-glow-a: rgba(92, 225, 255, 0.15);
+  --ink-glow-b: rgba(124, 92, 255, 0.13);
 }
