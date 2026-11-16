@@ -11,6 +11,7 @@ import PhotoStack from "./components/home/PhotoStack";
 import ProjectIndex from "./components/home/ProjectIndex";
 import Spotlight from "./components/ui/Spotlight";
 import AutoVideo from "./components/ui/AutoVideo";
+import Highlight from "./components/ui/Highlight";
 import Reveal from "./components/ui/Reveal";
 import {
   aiWork,
@@ -210,6 +211,11 @@ const Home = () => {
             n="03"
             label="ai lab"
             intro="Two of my projects you can try right here. Talk to Glitch, my desk robot, or ask ScholarLens about a research paper and watch how it finds the answer."
+            action={
+              <Link href="/lab" className="btn btn-secondary">
+                Open the AI lab <ArrowRight className="w-4 h-4" />
+              </Link>
+            }
           >
             What I&apos;m building <Accent>with LLMs.</Accent>
           </SectionHeader>
@@ -260,7 +266,9 @@ const Home = () => {
                         {w.highlights.map((h) => (
                           <li key={h} className="grid grid-cols-[1.25rem_1fr] leading-relaxed text-sm md:text-[15px]">
                             <span className="mt-[0.6rem] w-1.5 h-1.5 rounded-full bw-accent-fill" />
-                            <span>{h}</span>
+                            <span className="bw-muted">
+                              <Highlight text={h} />
+                            </span>
                           </li>
                         ))}
                       </ul>

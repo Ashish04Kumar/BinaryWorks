@@ -1,14 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import ScholarLensDemo from "./ScholarLensDemo";
+import { DEMOS } from "./demos";
 import { scrollToElement } from "@/lib/scroll";
-
-// three.js, the face and the vision models load only when the Glitch tab is opened
-const GlitchDemo = dynamic(() => import("../glitch/GlitchDemo"), {
-  ssr: false,
-  loading: () => <div className="h-[480px] grid place-items-center font-mono text-xs bw-muted border bw-rule rounded-lg">booting Glitch…</div>,
-});
 
 const TABS = [
   { key: "glitch", name: "Glitch", note: "talk to my desk robot" },
@@ -43,6 +36,7 @@ const AiLab = () => {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  const Demo = DEMOS[tab];
   return (
     <div id="ai-demos" className="scroll-mt-28">
       <div role="tablist" aria-label="Live demos" className="inline-flex p-1 mb-5 rounded-full border bw-rule bg-[var(--bg-subtle)]">
@@ -70,7 +64,9 @@ const AiLab = () => {
           );
         })}
       </div>
-      <div role="tabpanel">{tab === "glitch" ? <GlitchDemo /> : <ScholarLensDemo />}</div>
+      <div role="tabpanel">
+        <Demo />
+      </div>
     </div>
   );
 };

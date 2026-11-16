@@ -171,8 +171,11 @@ export type AiWork = {
   stack: string[];
   links: { label: string; href: string }[];
   image?: { src: string; alt: string };
-  // Live demo tab in the AI lab, if there is one
+  // Live demo in the AI lab, if there is one. Its component is registered in components/lab/demos.tsx.
+  // To add a project to /lab: give it a demo key and a `lab` card, then register the component.
   demo?: "glitch" | "scholarlens";
+  // How it appears on the /lab page: what kind of project it is, and one plain sentence on what you can do
+  lab?: { kind: string; oneLiner: string };
   // Demo video; `image` becomes its poster
   video?: string;
 };
@@ -181,17 +184,23 @@ export const aiWork: AiWork[] = [
   {
     name: "Glitch",
     demo: "glitch",
+    lab: {
+      kind: "Voice AI companion · IoT",
+      oneLiner: "Chat with my desk robot. It sets reminders, keeps notes and switches the lights, fan, AC and TV in a 3D room.",
+    },
     tagline: "An AI companion that lives on my desk, and runs my day.",
     status: "building",
     summary:
       "Glitch talks with you, but it's more than a talking bot. It remembers what you tell it, keeps your notes, reminders, lists and to-dos, and controls devices around the room. It has a face, a head that turns, and eyes that see gestures and people. Its brain started as a separate project, Umbrella, and now powers Glitch.",
+    // "Heading: detail" (the heading is shown in bold)
     highlights: [
-      "Reminders, notes, lists and to-dos, saved just by asking",
-      "Remembers things about you, for a few days or for good",
-      "Controls smart-home devices like lights and fans (IoT)",
-      "Always listening; you can interrupt it mid-sentence",
-      "Moods that show on its face and in how its head moves",
-      "Sees hand gestures and people, and turns to follow you",
+      "Talks like a person: a live voice conversation that you can interrupt mid-sentence, and it answers in your language, Hinglish included.",
+      "Remembers you: short-term memory for the conversation and long-term memory for facts like names, birthdays and what you like, so it picks up where you left off.",
+      "Organises your day: reminders that ring on time, lists, notes and to-dos, all set just by asking.",
+      "Runs the room (IoT): lights, fan, AC and TV by voice, by hand gestures or by who is in the room. Nobody around for two minutes, and everything switches off.",
+      "Sees you: YOLO spots people and MediaPipe reads hand gestures, so it turns its head to follow you and a held thumbs-up dims or brightens the lamp step by step.",
+      "Has moods: its face and head movements show how it feels, and the mood drifts with the conversation and the time of day.",
+      "Brain and body: the brain is Umbrella, a LangGraph agent with tools and memory; the body is a round display on two MG996R servos driven by a PCA9685, moving to a Raspberry Pi next.",
     ],
     stack: ["Python", "LangGraph", "FastAPI", "PostgreSQL", "LiveKit", "Pipecat", "Whisper", "MediaPipe", "YOLO", "Raspberry Pi", "Next.js"],
     links: [],
@@ -199,15 +208,23 @@ export const aiWork: AiWork[] = [
   {
     name: "ScholarLens",
     demo: "scholarlens",
+    lab: {
+      kind: "Agentic RAG",
+      oneLiner: "Ask a research paper anything. It decides how to answer, searches the paper and cites the pages.",
+    },
     tagline: "An Agentic RAG app: ask a research paper questions and get answers with sources.",
     status: "shipped",
     summary:
       "Upload a paper, or paste a link or an arXiv ID, and ask anything. It finds the right parts of the paper and answers with page numbers, or checks whether a claim still holds against newer research.",
+    // "Heading: detail" (the heading is shown in bold)
     highlights: [
-      "Decides for every question whether to search the paper, check a claim, or just answer",
-      "If a search finds nothing useful, it rephrases the question and tries once more",
-      "Checks claims against the web and arXiv and links the newer papers",
-      "Tested for accuracy with DeepEval, and runs in Docker on AWS",
+      "Agentic routing: for every question a LangGraph agent decides whether to search the paper, check a claim against newer research, or simply answer.",
+      "Retrieval that recovers: it grades what it found, and when the chunks aren't relevant it rewrites the question and searches again.",
+      "Answers you can check: every answer cites the pages it came from, and streams in as it is written.",
+      "Claim checking: verifies a paper's claim against the web and arXiv (Tavily) and links the newer papers that challenge or update it.",
+      "Any paper in: upload a PDF, paste a link or an arXiv ID; scanned pages are read with OCR, then chunked, embedded (Cohere) and indexed in Qdrant.",
+      "Conversations that stay: several chats side by side, each restored from its own saved state.",
+      "Measured and deployed: answers tested with DeepEval (faithfulness, relevancy, contextual precision and recall); runs in Docker on AWS, on Groq with Gemini as the fallback.",
     ],
     stack: ["LangGraph", "LangChain", "Qdrant", "Cohere", "Groq", "Gemini", "Tavily", "DeepEval", "Streamlit", "Docker", "AWS"],
     links: [

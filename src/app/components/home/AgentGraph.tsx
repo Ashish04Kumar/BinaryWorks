@@ -202,7 +202,7 @@ const AgentGraph = ({ live }: { live?: Scenario }) => {
       </p>
 
       {/* graph */}
-      <div data-lenis-prevent className="overflow-x-auto">
+      <div className="overflow-x-auto">
         <svg
           viewBox="0 -10 1060 490"
           className="font-mono w-full min-w-[720px] h-auto px-2"

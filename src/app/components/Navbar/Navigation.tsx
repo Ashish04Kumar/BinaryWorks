@@ -10,8 +10,9 @@ const Navigation = () => {
   const { theme, setTheme } = useTheme();
 
   const navItems = [
-    { path: "/", label: "home" },
-    { path: "/projects", label: "projects" },
+    { path: "/", label: "Home" },
+    { path: "/projects", label: "Projects" },
+    { path: "/lab", label: "AI lab" },
   ];
 
   return (
@@ -35,7 +36,7 @@ const Navigation = () => {
                 key={item.path}
                 href={item.path}
                 aria-current={active ? "page" : undefined}
-                className={`px-3.5 py-2 rounded-full transition-colors capitalize ${
+                className={`px-3.5 py-2 rounded-full transition-colors whitespace-nowrap ${
                   active ? "bw-subtle theme-text-primary font-medium" : "bw-muted hover:text-[var(--text-primary)]"
                 }`}
               >

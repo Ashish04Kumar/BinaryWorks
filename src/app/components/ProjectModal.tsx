@@ -106,7 +106,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
           </button>
         </div>
 
-        <div data-lenis-prevent className="p-4 overflow-auto max-h-[85vh] flex-1">
+        <div data-scroll-box className="p-4 overflow-auto max-h-[85vh] flex-1">
           <Swiper
             modules={[Navigation, Pagination]}
             navigation
