@@ -49,7 +49,7 @@ const ProjectIndex = ({ items }: { items: Item[] }) => {
           className="hidden md:block fixed z-30 pointer-events-none w-80 aspect-[16/10] rounded-md overflow-hidden border bw-rule shadow-2xl"
           style={{ left: preview.x + 24, top: preview.y - 100 }}
         >
-          <Image src={preview.src} alt="" fill sizes="320px" className="object-cover object-top" />
+          <Image src={preview.src} alt="" fill sizes="320px" unoptimized={preview.src.endsWith(".svg")} className="object-cover object-top" />
         </div>
       )}
     </div>
