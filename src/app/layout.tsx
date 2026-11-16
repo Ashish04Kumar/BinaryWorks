@@ -44,8 +44,10 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
+      {/* browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body> before React loads */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased`}
+        suppressHydrationWarning
       >
         <ThemeProvider>
           <SmoothScroll />

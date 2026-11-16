@@ -168,7 +168,7 @@ const ScholarLensDemo = () => {
       )}
 
       {/* chat */}
-      <div ref={logRef} data-lenis-prevent className="h-[22rem] overflow-y-auto px-4 py-5 space-y-5" aria-live="polite">
+      <div ref={logRef} data-scroll-box className="h-[22rem] overflow-y-auto px-4 py-5 space-y-5" aria-live="polite">
         {turns.length === 0 && (
           <div className="h-full flex flex-col justify-center">
             <p className="text-lg font-medium mb-1">Ask the paper anything.</p>

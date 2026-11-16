@@ -373,62 +373,54 @@ details.bw-row[open] .bw-chevron { transform: rotate(45deg); }
 
 @media (prefers-reduced-motion: reduce) { .bw-glow-border, .bw-shimmer::after { animation: none; } }
 
-// Travelling light on hairline separators. .bw-beam-x: along the element's top border.
-// .bw-beam-cols: down the vertical dividers between its children (md and up, where divide-x shows).
-// Each line carries two lights with unrelated durations (11s, 16s, 13s, 19s, 17s, 23s), so they drift apart
-// and the pattern never repeats in an obvious way; negative delays start them mid-flight.
+// Travelling light on hairline separators: one long, slow light per line. .bw-beam-x runs along the element's
+// top border; .bw-beam-cols runs down the vertical dividers between its children (md and up, where divide-x
+// shows). The lines have different speeds and start points, so they never move in step.
 .bw-beam-x { position: relative; }
 .bw-beam-x::before,
-.bw-beam-x::after,
-.bw-beam-cols > * + *::before,
-.bw-beam-cols > * + *::after {
+.bw-beam-cols > * + *::before {
   content: "";
   position: absolute;
   pointer-events: none;
   opacity: 0;
-  box-shadow: 0 0 10px 0.5px color-mix(in srgb, var(--accent-bright) 50%, transparent);
+  box-shadow: 0 0 10px 0.5px color-mix(in srgb, var(--accent-bright) 45%, transparent);
 }
-.bw-beam-x::before,
-.bw-beam-x::after {
+.bw-beam-x::before {
   top: -1px;
   height: 1px;
-  width: 18%;
+  width: 30%;
   background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
-  animation: bw-beam-x 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation: bw-beam-x 16s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: -4s;
 }
-.bw-beam-x::before { animation-delay: -3s; }
-.bw-beam-x::after { width: 12%; animation-duration: 16s; animation-delay: -10s; animation-direction: reverse; }
 @keyframes bw-beam-x {
-  0% { left: -18%; opacity: 0; }
-  12% { opacity: 0.9; }
-  78% { opacity: 0.9; }
+  0% { left: -30%; opacity: 0; }
+  15% { opacity: 0.85; }
+  80% { opacity: 0.85; }
   100% { left: 100%; opacity: 0; }
 }
 
 @media (min-width: 768px) {
   .bw-beam-cols > * { position: relative; }
-  .bw-beam-cols > * + *::before,
-  .bw-beam-cols > * + *::after {
+  .bw-beam-cols > * + *::before {
     left: -1px;
     width: 1px;
-    height: 24%;
+    height: 40%;
     background: linear-gradient(180deg, transparent, var(--accent-bright), transparent);
-    animation: bw-beam-y 13s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    animation: bw-beam-y 18s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    animation-delay: -6s;
   }
-  .bw-beam-cols > * + *::before { animation-delay: -5s; }
-  .bw-beam-cols > * + *::after { height: 16%; animation-duration: 19s; animation-delay: -14s; animation-direction: reverse; }
-  .bw-beam-cols > * + * + *::before { animation-duration: 17s; animation-delay: -1s; }
-  .bw-beam-cols > * + * + *::after { animation-duration: 23s; animation-delay: -8s; }
+  .bw-beam-cols > * + * + *::before { animation-duration: 23s; animation-delay: -15s; }
 }
 @keyframes bw-beam-y {
-  0% { top: -24%; opacity: 0; }
-  12% { opacity: 0.9; }
-  78% { opacity: 0.9; }
+  0% { top: -40%; opacity: 0; }
+  15% { opacity: 0.85; }
+  80% { opacity: 0.85; }
   100% { top: 100%; opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bw-beam-x::before, .bw-beam-x::after, .bw-beam-cols > *::before, .bw-beam-cols > *::after { animation: none; opacity: 0; }
+  .bw-beam-x::before, .bw-beam-cols > *::before { animation: none; opacity: 0; }
 }
 
 // LLM answers rendered from Markdown (ScholarLens demo)
@@ -464,13 +456,88 @@ details.bw-row[open] .bw-chevron { transform: rotate(45deg); }
   animation: bw-blink 1s steps(1) infinite;
 }
 
-// Phones: Lenis's "contain" on inner scroll boxes (chat logs) stops a swipe from moving the page,
-// even when the box has nothing to scroll. On touch screens let the swipe carry on to the page.
-@media (pointer: coarse) {
-  html.lenis [data-lenis-prevent] { overscroll-behavior: auto; } // beats lenis.css (.lenis [data-lenis-prevent])
-}
+// Inner scroll boxes: a swipe or wheel that reaches their end carries on to the page
+[data-scroll-box] { overscroll-behavior: auto; }
 
 // Phones: everything is sized in rem, so a slightly smaller root scales text and spacing together
 @media (max-width: 639px) {
   html { font-size: 15px; }
+}
+
+// Glitch's home pulse: a bright frosted pill at the top of the stage when something in the home changes.
+// Light and glowing on purpose, so it stands out over the dark 3D room, the robot or the face.
+.bw-pulse {
+  opacity: 0;
+  transform: translate(-50%, -14px) scale(0.95);
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.2, 0.9, 0.25, 1.25);
+}
+.bw-pulse.is-in { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.bw-pulse-pill {
+  color: #0b0d10;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid color-mix(in srgb, var(--accent-bright) 70%, white);
+  backdrop-filter: blur(14px) saturate(1.5);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent-bright) 22%, transparent),
+    0 0 28px color-mix(in srgb, var(--accent-bright) 45%, transparent),
+    0 14px 30px -14px rgba(0, 0, 0, 0.55);
+  animation: bw-pulse-bump 0.34s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.bw-pulse-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-bright) 18%, white);
+}
+.bw-pulse-value { color: color-mix(in srgb, var(--accent-bright) 75%, black); font-weight: 600; }
+@keyframes bw-pulse-bump { 0% { transform: scale(0.93); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .bw-pulse { transition: opacity 0.2s ease; transform: translate(-50%, 0); }
+  .bw-pulse-pill { animation: none; }
+}
+
+// Glitch's reminders / lists / notes: a box glows softly for a moment when something is added to it
+.bw-saved {
+  border-radius: 10px;
+  transition: box-shadow 0.6s ease, background-color 0.6s ease;
+}
+.bw-saved.is-new {
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent-bright) 70%, transparent), 0 0 18px -6px color-mix(in srgb, var(--accent-bright) 55%, transparent);
+  background-color: color-mix(in srgb, var(--accent-bright) 6%, transparent);
+}
+
+// One-time pointers in Glitch's demo: the rest of the panel softly blurs, the pointed-at part stays sharp and glows
+.bw-coach-veil {
+  background: color-mix(in srgb, var(--bg-primary) 35%, transparent);
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+  animation: bw-coach-in 0.4s ease both;
+  cursor: pointer;
+}
+.bw-coach-target {
+  z-index: 40;
+  border-radius: 12px;
+  background: var(--bg-card);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-bright) 70%, transparent), 0 0 28px -4px color-mix(in srgb, var(--accent-bright) 55%, transparent);
+  animation: bw-coach-glow 2.2s ease-in-out infinite;
+}
+.bw-coach-tip {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--accent-solid);
+  color: var(--accent-solid-fg);
+  box-shadow: 0 16px 40px -14px rgba(0, 0, 0, 0.45);
+  animation: bw-coach-pop 0.4s cubic-bezier(0.2, 0.9, 0.25, 1.2) both;
+}
+.bw-coach-ok { background: var(--accent-bright); color: #fff; }
+@keyframes bw-coach-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bw-coach-pop { from { opacity: 0; transform: translateY(6px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes bw-coach-glow {
+  50% { box-shadow: 0 0 0 2px var(--accent-bright), 0 0 40px -2px color-mix(in srgb, var(--accent-bright) 70%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bw-coach-veil, .bw-coach-tip, .bw-coach-target { animation: none; }
 }

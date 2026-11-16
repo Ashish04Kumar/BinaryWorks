@@ -6,6 +6,10 @@ import { createGlitchScene, type GestureStep, type GlitchScene } from "./scene";
 import type { HomeScene } from "./home";
 import { MoodModel, POSE, type Feeling } from "./mood";
 import GlitchWorld from "./GlitchWorld";
+import HomePanel, { type HomeGesture } from "./HomePanel";
+import HomePulse, { pulseOf, pulseOfMany, type Pulse } from "./HomePulse";
+import { firstTime, type Coach } from "./CoachTip";
+import { home as umbrella, HomeOffline, type HomeLog, type HomeState } from "./umbrella";
 import { applyActions, dueReminders, EMPTY_WORLD, isIot, loadWorld, nowString, saveWorld, type Action, type World } from "./world";
 import { useTheme } from "@/app/providers/theme-provider";
 import { startVision, type Box } from "./vision";
@@ -41,20 +45,18 @@ const MOODS: Record<string, GestureStep[]> = {
   sad: [[0, 14, 2.0], [0, 4, 0]],
 };
 
-// glitch.toml [gestures]
-const GESTURES: { name: string; icon: string; action: string; label: string }[] = [
-  { name: "thumb_up", icon: "👍", action: "say:Yes", label: "yes" },
-  { name: "thumb_down", icon: "👎", action: "say:No", label: "no" },
-  { name: "victory", icon: "✌️", action: "muse", label: "a thought" },
-  { name: "i_love_you", icon: "🤟", action: "react:happy", label: "happy" },
-  { name: "pointing_up", icon: "☝️", action: "listen", label: "listen" },
-  { name: "open_palm", icon: "✋", action: "quiet", label: "quiet" },
-  { name: "closed_fist", icon: "✊", action: "lock", label: "follow me" },
+// The hand gestures Umbrella's home rules act on (home.toml). open_palm is left free on purpose: hands are
+// often open while talking. Held, the first four keep stepping (fan 1, 2, 3… / lamp 20, 40, 60 %).
+const GESTURES: HomeGesture[] = [
+  { name: "pointing_up", icon: "☝️", label: "fan faster", repeat: true },
+  { name: "closed_fist", icon: "✊", label: "fan slower", repeat: true },
+  { name: "thumb_up", icon: "👍", label: "lamp brighter", repeat: true },
+  { name: "thumb_down", icon: "👎", label: "lamp dimmer", repeat: true },
+  { name: "i_love_you", icon: "🤟", label: "room light", repeat: false },
+  { name: "victory", icon: "✌️", label: "TV on / off", repeat: false },
 ];
-const ACTION_FOR = Object.fromEntries(GESTURES.map((g) => [g.name, g.action]));
-const TOGGLE_GESTURES = new Set(GESTURES.filter((g) => g.action === "quiet" || g.action === "lock").map((g) => g.name));
-
-const MUSE_PROMPT = "(Nobody has said anything for a while. Share one short spontaneous thought, as yourself. Do not mention this instruction.)";
+const REPEAT_GESTURES = new Set(GESTURES.filter((g) => g.repeat).map((g) => g.name));
+const HOME_GESTURES = new Set(GESTURES.map((g) => g.name));
 
 type SpeechRec = { lang: string; interimResults: boolean; start: () => void; stop: () => void; onresult: ((e: { results: { 0: { transcript: string } }[] }) => void) | null; onend: (() => void) | null; onerror: ((e: { error: string }) => void) | null };
 
@@ -70,10 +72,8 @@ const GlitchDemo = () => {
   const stopVisionRef = useRef<(() => void) | null>(null);
   const recRef = useRef<SpeechRec | null>(null);
   const messagesRef = useRef<Msg[]>([]);
-  const lockedRef = useRef(false);
   const followRef = useRef<[number, number] | null>(null);
   const personRef = useRef(false);   // a person is in view on the camera
-  const quietRef = useRef(false);
   const voiceRef = useRef(true);
   const stateRef = useRef("idle");
   const worldRef = useRef<World>(EMPTY_WORLD);
@@ -83,8 +83,6 @@ const GlitchDemo = () => {
   const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
   const [voiceOn, setVoiceOn] = useState(true);
-  const [quiet, setQuiet] = useState(false);
-  const [locked, setLocked] = useState(false);
   const [feeling, setFeeling] = useState<Feeling | null>(null);
   const [hover, setHover] = useState<{ part: string; x: number; y: number } | null>(null);
   const [camOn, setCamOn] = useState(false);
@@ -110,6 +108,34 @@ const GlitchDemo = () => {
   // phones show one of the lower panels at a time
   const [phonePanel, setPhonePanel] = useState<"saved" | "home" | "camera">("home");
   const [homeState, setHomeState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  // The smart home, from Umbrella (see umbrella.ts): its state, action log, newest line, and whether it answers
+  const [house, setHouse] = useState<HomeState | null>(null);
+  const houseRef = useRef<HomeState | null>(null);
+  const [houseLog, setHouseLog] = useState<HomeLog>({ actions: [], messages: [] });
+  const [houseLine, setHouseLine] = useState("");
+  const [houseOffline, setHouseOffline] = useState("");
+  const [people, setPeople] = useState<number | null>(null);
+  const [speakHome, setSpeakHome] = useState(false);
+  const speakHomeRef = useRef(false);
+  // the little pill over the stage when something in the home changes
+  const [pulse, setPulse] = useState<Pulse | null>(null);
+  const [pulseOn, setPulseOn] = useState(false);
+  const pulseBatch = useRef<{ rows: Record<string, unknown>[]; at: number }>({ rows: [], at: 0 });
+  const pulseTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // a one-time pointer to something new (the gestures when the camera first starts, the saved boxes the first
+  // time something is saved or removed); the rest of the panel softly blurs meanwhile
+  const [coach, setCoach] = useState<Coach | null>(null);
+  const coachTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const showCoach = useCallback((c: Coach) => {
+    if (window.innerWidth < 768 || !firstTime(c)) return; // phones show one panel at a time: skip it there
+    setCoach(c);
+    clearTimeout(coachTimer.current);
+    coachTimer.current = setTimeout(() => setCoach(null), 8000);
+  }, []);
+  const endCoach = useCallback(() => {
+    clearTimeout(coachTimer.current);
+    setCoach(null);
+  }, []);
 
   // ---------- body: face + 3D + mood ----------
   useEffect(() => {
@@ -204,11 +230,11 @@ const GlitchDemo = () => {
     const start = setTimeout(() => {
       setHomeState("loading");
       import("./home")
-        .then(({ createHomeScene }) => createHomeScene(host, worldRef.current.devices))
+        .then(({ createHomeScene }) => createHomeScene(host, houseRef.current?.devices ?? []))
         .then((home) => {
           if (cancelled) return home.dispose();
           homeRef.current = home;
-          home.set(worldRef.current.devices);
+          home.set(houseRef.current?.devices ?? []);
           home.setPaused(viewRef.current !== "home");
           setHomeState("ready");
         })
@@ -221,12 +247,31 @@ const GlitchDemo = () => {
   }, []);
 
   useEffect(() => {
-    homeRef.current?.set(world.devices);
-  }, [world.devices]);
+    if (house) homeRef.current?.set(house.devices);
+  }, [house]);
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, busy]);
+
+  // the camera is watching for the first time: point at the gestures it understands
+  useEffect(() => {
+    if (camOn && visionStatus === "watching") showCoach("gestures");
+  }, [camOn, visionStatus, showCoach]);
+
+  // the first time something is saved or removed (not what loads from earlier visits): point at the boxes
+  const savedCount = world.reminders.length + world.todos.length + world.notes.length + Object.values(world.lists).reduce((n, l) => n + l.length, 0);
+  const lastSaved = useRef<number | null>(null);
+  useEffect(() => {
+    const t = setTimeout(() => (lastSaved.current ??= savedCount), 1500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (lastSaved.current === null) return;
+    if (savedCount !== lastSaved.current) showCoach("saved");
+    lastSaved.current = savedCount;
+  }, [savedCount, showCoach]);
 
   // Idle: the eyes (and gently the head) follow the visitor's cursor anywhere on the page
   useEffect(() => {
@@ -260,10 +305,13 @@ const GlitchDemo = () => {
   }, []);
 
   // ---------- voice out (browser speech synthesis; the robot uses Sarvam / Piper) ----------
+  // Home lines are spoken one at a time: while Glitch talks, only the newest waiting line is kept
+  const homeLineWaiting = useRef("");
+  const speakRef = useRef<(text: string) => void>(() => {});
   const speak = useCallback(
     (text: string) => {
       const synth = window.speechSynthesis;
-      if (!synth || !voiceRef.current || quietRef.current) {
+      if (!synth || !voiceRef.current) {
         brainState("idle");
         return;
       }
@@ -283,12 +331,26 @@ const GlitchDemo = () => {
         if (pulse) clearInterval(pulse);
         faceRef.current?.feed({ type: "VoiceLevel", level: 0 });
         brainState("idle");
+        const waiting = homeLineWaiting.current;
+        homeLineWaiting.current = "";
+        if (waiting) setTimeout(() => speakRef.current(waiting), 150);
       };
       u.onend = end;
       u.onerror = end;
       synth.speak(u);
     },
     [brainState]
+  );
+  useEffect(() => {
+    speakRef.current = speak;
+  }, [speak]);
+  const sayHomeLine = useCallback(
+    (text: string) => {
+      if (!speakHomeRef.current) return;
+      if (window.speechSynthesis?.speaking) homeLineWaiting.current = text;
+      else speak(text);
+    },
+    [speak]
   );
 
   // ---------- brain ----------
@@ -310,12 +372,13 @@ const GlitchDemo = () => {
         const res = await fetch("/api/glitch", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: history, feeling: moodRef.current?.feeling().name, now: nowString(), world: worldRef.current }),
+          body: JSON.stringify({ messages: history, feeling: moodRef.current?.feeling().name, now: nowString(), world: { ...worldRef.current, devices: houseRef.current?.devices ?? "the smart home is offline" } }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Glitch glitched.");
         const actions: Action[] = Array.isArray(data.actions) ? data.actions : [];
         if (actions.length) setWorld(applyActions(worldRef.current, actions));
+        const deviceActions = actions.filter((a) => a.type === "device");
         // Which view fits this reply: an IoT command shows the room, any other talk brings the face back
         if (isIot(actions)) {
           if (!no3dRef.current) setView("home");
@@ -334,6 +397,21 @@ const GlitchDemo = () => {
           sceneRef.current?.setRest(pose[0], pose[1]);
         }
         speak(data.text);
+        // Device commands go to Umbrella's home (its line says exactly what changed, or asks which device)
+        for (const a of deviceActions) {
+          try {
+            const done = await umbrella.command(String(a.device ?? ""), String(a.action ?? "toggle"), typeof a.value === "number" ? a.value : null);
+            const said = done.say || done.ask;
+            if (said) {
+              messagesRef.current = [...messagesRef.current, { role: "assistant", content: said }];
+              setMessages(messagesRef.current);
+              homeLineWaiting.current = said; // said right after Glitch's own reply
+              setHouseLine(said);
+            }
+          } catch (err) {
+            setError(err instanceof HomeOffline ? "The smart home is offline right now." : err instanceof Error ? err.message : "The home didn't answer.");
+          }
+        }
       } catch (e) {
         brainState("error");
         setTimeout(() => brainState("idle"), 1500);
@@ -370,7 +448,6 @@ const GlitchDemo = () => {
       recRef.current?.stop();
       return;
     }
-    if (quietRef.current) return;
     const W = window as unknown as { SpeechRecognition?: new () => SpeechRec; webkitSpeechRecognition?: new () => SpeechRec };
     const Rec = W.SpeechRecognition || W.webkitSpeechRecognition;
     if (!Rec) return;
@@ -395,49 +472,121 @@ const GlitchDemo = () => {
     brainState("listening");
   }, [listening, send, brainState, busy]);
 
-  // ---------- gestures → Glitch's actions (glitch/vision/actions.py) ----------
-  const act = useCallback(
-    (gesture: string) => {
-      const action = ACTION_FOR[gesture];
-      if (!action) return;
-      setLastGesture(gesture);
-      setTimeout(() => setLastGesture((g) => (g === gesture ? null : g)), 2200);
-      const [verb, arg = ""] = action.split(":");
-      const whileQuiet = new Set(["quiet", "listen", "lock", "unlock"]);
-      if (quietRef.current && !whileQuiet.has(verb)) return;
-      if (verb === "say") send(arg);
-      else if (verb === "muse") send(MUSE_PROMPT, { hidden: true });
-      else if (verb === "react") {
-        faceRef.current?.feed({ type: "Mood", expression: arg });
-        sceneRef.current?.play(MOODS[arg] || REST);
-      } else if (verb === "quiet") {
-        quietRef.current = !quietRef.current;
-        setQuiet(quietRef.current);
-        if (quietRef.current) {
-          window.speechSynthesis?.cancel();
-          recRef.current?.stop();
-        }
-      } else if (verb === "listen") {
-        quietRef.current = false;
-        setQuiet(false);
-        if (!listening) toggleMic();
-      } else if (verb === "lock") {
-        lockedRef.current = !lockedRef.current;
-        setLocked(lockedRef.current);
-        if (!lockedRef.current) {
-          sceneRef.current?.follow(null);
-          followRef.current = null;
-        }
+  // ---------- the smart home (Umbrella) ----------
+  // What changed, as a pill over the stage. Changes of different devices within a moment (the room went empty)
+  // become one pill; the same device stepping (a held gesture) updates the pill in place.
+  const showPulse = useCallback((row: Record<string, unknown>) => {
+    const now = Date.now();
+    const batch = pulseBatch.current;
+    if (now - batch.at > 600) batch.rows = [];
+    batch.rows = [...batch.rows.filter((r) => r.device_id !== row.device_id), row];
+    batch.at = now;
+    const view = batch.rows.length > 1 ? pulseOfMany(batch.rows) : pulseOf(row);
+    setPulse({ ...view, key: now });
+    setPulseOn(true);
+    clearTimeout(pulseTimer.current);
+    pulseTimer.current = setTimeout(() => setPulseOn(false), 1800);
+  }, []);
+
+  const refreshHouse = useCallback(async () => {
+    try {
+      const [state, log] = await Promise.all([umbrella.state(), umbrella.log(40)]);
+      houseRef.current = state;
+      setHouse(state);
+      setHouseLog(log);
+      setHouseOffline("");
+      return state;
+    } catch (e) {
+      if (e instanceof HomeOffline) {
+        houseRef.current = null;
+        setHouse(null);
       }
+      setHouseOffline(e instanceof HomeOffline ? "The smart home is offline right now (Glitch's brain, Umbrella, isn't connected)." : "The smart home didn't answer.");
+      return null;
+    }
+  }, []);
+
+  // A gesture (from the camera or a tile) goes to Umbrella's rules; held = "repeat" (one more step)
+  const homeGesture = useCallback((name: string, repeat: boolean) => {
+    setLastGesture(name);
+    setTimeout(() => setLastGesture((g) => (g === name ? null : g)), 2500);
+    if (!repeat) faceRef.current?.feed({ type: "Mood", expression: "curious" });
+    umbrella.signals({ gesture: name, repeat, source: "gesture" }).catch(() => {});
+  }, []);
+
+  // First load, live updates from Umbrella, and a light poll so the empty-room countdown keeps moving
+  useEffect(() => {
+    let current = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const openedAt = Date.now();
+    let lastSpoken = 0;
+    const soon = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => current && refreshHouse(), 200);
+    };
+    let stop = () => {};
+    refreshHouse().then((state) => {
+      if (!current || !state) return;
+      stop = umbrella.listen((kind, data, at, id) => {
+        soon();
+        if (kind === "home_action" && data.status === "done" && at * 1000 >= openedAt - 1000) {
+          if (!no3dRef.current) setView("home");
+          showPulse(data);
+        }
+        if (kind === "home_message" && typeof data.text === "string") {
+          setHouseLine(data.text);
+          // the stream first replays recent events: speak (and react to) only lines that are new, each once
+          // (replies to a command are already said where the command was given: the chat or a device button)
+          if (id > lastSpoken && at * 1000 >= openedAt - 1000 && data.method !== "reply") {
+            faceRef.current?.feed({ type: "Mood", expression: "happy" });
+            sayHomeLine(data.text);
+          }
+          lastSpoken = Math.max(lastSpoken, id);
+        }
+      });
+    });
+    // keep the countdown moving; while Umbrella is unreachable, only check now and then
+    let tries = 0;
+    const poll = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      if (houseRef.current || ++tries % 8 === 0) refreshHouse();
+    }, 4000);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+      clearInterval(poll);
+      stop();
+    };
+  }, [refreshHouse, sayHomeLine, showPulse]);
+
+  const homeCommand = useCallback(
+    (device: string, action: string) => {
+      umbrella
+        .command(device, action)
+        .then((done) => {
+          if (done.say || done.ask) setHouseLine(done.say || done.ask || "");
+          if (done.say) sayHomeLine(done.say);
+          refreshHouse();
+        })
+        .catch((e) => setHouseOffline(e instanceof HomeOffline ? "The smart home is offline right now." : String(e.message || e)));
     },
-    [send, listening, toggleMic]
+    [refreshHouse, sayHomeLine]
+  );
+
+  const peopleEvent = useCallback(
+    (k: "enter" | "empty" | "left") => {
+      const done = k === "enter" ? umbrella.signals({ people: 1, source: "sim" }) : k === "empty" ? umbrella.signals({ people: 0, source: "sim" }) : umbrella.event({ kind: "person_left" });
+      done.then(() => refreshHouse()).catch(() => {});
+    },
+    [refreshHouse]
   );
 
   // ---------- camera ----------
   const drawOverlay = useCallback((boxes: Box[], hands: { x: number; y: number; gesture: string | null }[]) => {
     const canvas = overlayRef.current, video = videoRef.current;
     if (!canvas || !video) return;
-    const w = (canvas.width = canvas.clientWidth), h = (canvas.height = canvas.clientHeight);
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (canvas.width !== w || canvas.height !== h) [canvas.width, canvas.height] = [w, h];
     const g = canvas.getContext("2d")!;
     g.clearRect(0, 0, w, h);
     g.font = "11px ui-monospace, monospace";
@@ -468,6 +617,7 @@ const GlitchDemo = () => {
       setCamOn(false);
       setVisionStatus("");
       setSeen([]);
+      setPeople(null);
       sceneRef.current?.follow(null);
       followRef.current = null;
       personRef.current = false;
@@ -481,9 +631,14 @@ const GlitchDemo = () => {
         video,
         {
           onStatus: setVisionStatus,
-          // only the gestures listed above do something (waves and swipes are ignored)
-          onGesture: (g) => {
-            if (ACTION_FOR[g]) act(g);
+          // the gestures Umbrella's rules act on (others, like an open palm, are left alone)
+          onGesture: (g, repeat) => {
+            if (HOME_GESTURES.has(g)) homeGesture(g, repeat);
+          },
+          // how many people are in view (only when it changes): Umbrella starts or stops the empty-room clock
+          onPeople: (count) => {
+            setPeople(count);
+            umbrella.signals({ people: count, source: "yolo" }).then(() => refreshHouse()).catch(() => {});
           },
           onFrame: (boxes, hands) => {
             drawOverlay(boxes, hands);
@@ -516,7 +671,7 @@ const GlitchDemo = () => {
             }
           },
         },
-        TOGGLE_GESTURES
+        REPEAT_GESTURES
       );
     } catch (e) {
       console.error("Glitch vision:", e);
@@ -534,13 +689,15 @@ const GlitchDemo = () => {
   };
 
   return (
-    <div className="bw-panel overflow-hidden">
+    <div className="bw-panel overflow-hidden relative">
+      {/* while a one-time pointer shows: everything else in the panel softly blurs; a click closes it */}
+      {coach && <div className="bw-coach-veil absolute inset-0 z-30" onClick={endCoach} aria-hidden />}
       <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         {/* body: full 3D robot, or the face alone */}
         <div className="relative border-b lg:border-b-0 lg:border-r bw-rule bw-grid">
           <div
             ref={stageRef}
-            className={`h-[300px] sm:h-[380px] md:h-[480px] w-full ${view !== "robot" ? "invisible" : ""}`}
+            className={`h-[300px] sm:h-[380px] md:h-[440px] lg:h-[400px] w-full ${view !== "robot" ? "invisible" : ""}`}
             aria-label="3D model of Glitch: a round display face on an MG996R pan-tilt bracket"
             role="img"
           />
@@ -570,6 +727,7 @@ const GlitchDemo = () => {
               fan by lucaboechat, lamp by fchaolshi · Sketchfab
             </p>
           </div>
+          <HomePulse pulse={pulse} visible={pulseOn} />
           {hover && view === "robot" && (
             <div
               className="pointer-events-none absolute z-10 px-2 py-1 rounded border bw-rule theme-bg-primary font-mono text-[11px] whitespace-nowrap shadow"
@@ -584,8 +742,6 @@ const GlitchDemo = () => {
                 feels <span className="bw-accent">{feeling.name}</span>
               </p>
             )}
-            {quiet && <p className="px-2 py-1 rounded theme-bg-primary border bw-rule text-amber-500">quiet mode</p>}
-            {locked && <p className="px-2 py-1 rounded theme-bg-primary border bw-rule bw-accent">following you</p>}
           </div>
           {!no3d && (
             <div role="tablist" aria-label="View" className="absolute top-3 right-3 inline-flex p-0.5 rounded-full border bw-rule theme-bg-card text-xs">
@@ -615,8 +771,8 @@ const GlitchDemo = () => {
         </div>
 
         {/* chat */}
-        <div className="flex flex-col min-h-[260px] md:min-h-[480px] border-t lg:border-t-0 bw-rule">
-          <div ref={logRef} data-lenis-prevent className="flex-1 overflow-y-auto px-4 py-4 space-y-3 max-h-[300px] md:max-h-[420px]" aria-live="polite">
+        <div className="flex flex-col min-h-[260px] md:min-h-[440px] lg:min-h-[400px] border-t lg:border-t-0 bw-rule">
+          <div ref={logRef} data-scroll-box className="flex-1 overflow-y-auto px-4 py-4 space-y-3 max-h-[300px] md:max-h-[380px] lg:max-h-[330px]" aria-live="polite">
             {messages.length === 0 && (
               <div className="h-full flex flex-col justify-center">
                 <p className="text-base md:text-lg font-medium mb-1">Say hi to Glitch.</p>
@@ -624,7 +780,7 @@ const GlitchDemo = () => {
                   Talk or type. It can set reminders, keep lists and notes, and switch the lights, fan, AC and TV in its room.
                 </p>
                 {/* phones: one swipeable row of suggestions instead of a tall wrapped block */}
-                <div data-lenis-prevent className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 md:mx-0 md:px-0 md:flex-wrap md:overflow-visible [scrollbar-width:none]">
+                <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 md:mx-0 md:px-0 md:flex-wrap md:overflow-visible [scrollbar-width:none]">
                   {["Remind me to drink water in 1 minute", "Add milk and eggs to my shopping list", "Turn on the lights and set the AC to 22", "Who made you?"].map((s) => (
                     <button key={s} onClick={() => send(s)} className="shrink-0 text-xs md:text-sm px-3 py-1.5 rounded-full border bw-rule bw-chip cursor-pointer">
                       {s}
@@ -656,7 +812,7 @@ const GlitchDemo = () => {
             <button
               type="button"
               onClick={toggleMic}
-              disabled={!canListen || quiet}
+              disabled={!canListen}
               aria-label={listening ? "Stop listening" : "Talk to Glitch"}
               title={canListen ? "Talk to Glitch" : "Voice input needs Chrome or Edge"}
               className={`grid place-items-center w-9 h-9 rounded-full border cursor-pointer disabled:opacity-40 ${
@@ -713,66 +869,55 @@ const GlitchDemo = () => {
         ))}
       </div>
 
-      {/* what Glitch keeps for you, and the devices it controls */}
-      <GlitchWorld
-        phonePanel={phonePanel}
-        world={world}
-        onChange={(w) => {
-          // switching a device by hand also shows it happen in the room
-          if (!no3d && JSON.stringify(w.devices) !== JSON.stringify(world.devices)) setView("home");
-          setWorld(w);
+      {/* the smart home: Umbrella's, with Glitch's camera feeding it */}
+      <HomePanel
+        state={house}
+        log={houseLog}
+        line={houseLine}
+        offline={houseOffline}
+        people={camOn ? people : null}
+        lastGesture={lastGesture}
+        gestures={GESTURES}
+        speakOn={speakHome}
+        onSpeak={(on) => {
+          speakHomeRef.current = on;
+          setSpeakHome(on);
+          if (!on) homeLineWaiting.current = "";
         }}
+        send={homeCommand}
+        gesture={homeGesture}
+        peopleEvent={peopleEvent}
+        phonePanel={phonePanel}
+        coach={coach === "gestures"}
+        onCoachDone={endCoach}
+        camera={
+          <>
+              <div className="relative aspect-video rounded-md overflow-hidden border bw-rule bg-black/80">
+                <video ref={videoRef} className={`absolute inset-0 w-full h-full object-cover -scale-x-100 ${camOn ? "" : "hidden"}`} />
+                <canvas ref={overlayRef} className="absolute inset-0 w-full h-full" />
+                {!camOn && (
+                  <div className="absolute inset-0 grid place-items-center text-center p-4 font-mono text-[11px] text-white/70">
+                    The camera stays on your device. Nothing is uploaded.
+                  </div>
+                )}
+              </div>
+              <div className="flex gap-2 mt-2 font-mono text-xs">
+                <button onClick={toggleCamera} className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-full border cursor-pointer ${camOn ? "bw-accent bw-accent-border bw-tint" : "bw-rule bw-chip"}`}>
+                  {camOn ? <CameraOff className="w-3.5 h-3.5" /> : <Camera className="w-3.5 h-3.5" />}
+                  {camOn ? "camera off" : "camera on"}
+                </button>
+              </div>
+              {camOn && (
+                <p className="mt-2 font-mono text-[11px] bw-muted min-h-[1rem]">
+                  {visionStatus === "watching" ? `sees: ${seen.join(", ") || "nothing yet"}` : visionStatus}
+                </p>
+              )}
+          </>
+        }
       />
 
-      {/* eyes: camera + gestures */}
-      <div className={`${phonePanel === "camera" ? "grid" : "hidden"} md:grid md:grid-cols-[17rem_1fr] border-t bw-rule`}>
-        <div className="p-3 md:border-r bw-rule">
-          <div className="relative aspect-video md:aspect-[4/3] rounded-md overflow-hidden border bw-rule bg-black/80">
-            <video ref={videoRef} className={`absolute inset-0 w-full h-full object-cover -scale-x-100 ${camOn ? "" : "hidden"}`} />
-            <canvas ref={overlayRef} className="absolute inset-0 w-full h-full" />
-            {!camOn && (
-              <div className="absolute inset-0 grid place-items-center text-center p-4 font-mono text-[11px] text-white/70">
-                The camera stays on your device. Nothing is uploaded.
-              </div>
-            )}
-          </div>
-          <div className="flex gap-2 mt-2 font-mono text-xs">
-            <button onClick={toggleCamera} className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-full border cursor-pointer ${camOn ? "bw-accent bw-accent-border bw-tint" : "bw-rule bw-chip"}`}>
-              {camOn ? <CameraOff className="w-3.5 h-3.5" /> : <Camera className="w-3.5 h-3.5" />}
-              {camOn ? "camera off" : "camera on"}
-            </button>
-          </div>
-          {camOn && (
-            <p className="mt-2 font-mono text-[11px] bw-muted min-h-[1rem]">
-              {visionStatus === "watching" ? `sees: ${seen.join(", ") || "nothing yet"}` : visionStatus}
-            </p>
-          )}
-        </div>
-        <div className="p-3">
-          <p className="font-mono text-xs bw-muted mb-2">
-            hand gestures {camOn ? "· show one to the camera, or tap" : "· tap one, or turn the camera on"}
-          </p>
-          <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 md:gap-2">
-            {GESTURES.map((g) => (
-              <button
-                key={g.name}
-                onClick={() => act(g.name)}
-                className={`flex flex-col items-center md:items-start gap-0.5 px-1.5 md:px-2.5 py-2 rounded-md border text-center md:text-left cursor-pointer transition-colors ${
-                  lastGesture === g.name ? "bw-accent-border bw-tint" : "bw-rule bw-row-link"
-                }`}
-              >
-                <span className="text-lg leading-none">{g.icon}</span>
-                <span className="hidden md:inline font-mono text-[10px] bw-muted">{g.name}</span>
-                <span className="text-[11px] md:text-xs">{g.label}</span>
-              </button>
-            ))}
-          </div>
-          <p className="mt-3 font-mono text-[11px] bw-muted">
-            Same face, moods and gestures as the real robot. Your reminders, lists and notes stay in this browser, and
-            the smart-home devices here are demo devices.
-          </p>
-        </div>
-      </div>
+      {/* what Glitch keeps for you */}
+      <GlitchWorld phonePanel={phonePanel} world={world} onChange={setWorld} coach={coach === "saved"} onCoachDone={endCoach} />
     </div>
   );
 };

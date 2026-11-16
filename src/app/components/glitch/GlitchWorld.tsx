@@ -1,6 +1,8 @@
 "use client";
-import { AirVent, Bell, Fan, Lightbulb, ListChecks, NotebookPen, Plug, Tv, X } from "lucide-react";
-import type { Devices, World } from "./world";
+import { useEffect, useRef, useState } from "react";
+import { Bell, ListChecks, NotebookPen, X } from "lucide-react";
+import type { World } from "./world";
+import CoachTip from "./CoachTip";
 
 const time = (iso: string) => {
   const d = new Date(iso);
@@ -8,8 +10,28 @@ const time = (iso: string) => {
   return (today ? "" : d.toLocaleDateString(undefined, { day: "numeric", month: "short" }) + " ") + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 };
 
-const Column = ({ icon, title, children, hide }: { icon: React.ReactNode; title: string; children: React.ReactNode; hide?: boolean }) => (
-  <div className={`p-4 min-w-0 ${hide ? "hidden md:block" : ""}`}>
+/** True for a moment after `count` goes up (something was added), so its box can glow. Not on the first load. */
+function useGrew(count: number) {
+  const [grew, setGrew] = useState(false);
+  const last = useRef(count);
+  const ready = useRef(false);
+  useEffect(() => {
+    const t = setTimeout(() => (ready.current = true), 1500); // what was saved from earlier visits loads in first
+    return () => clearTimeout(t);
+  }, []);
+  useEffect(() => {
+    const before = last.current;
+    last.current = count;
+    if (!ready.current || count <= before) return;
+    setGrew(true);
+    const t = setTimeout(() => setGrew(false), 2200);
+    return () => clearTimeout(t);
+  }, [count]);
+  return grew;
+}
+
+const Column = ({ icon, title, children, hide, flash }: { icon: React.ReactNode; title: string; children: React.ReactNode; hide?: boolean; flash?: boolean }) => (
+  <div className={`bw-saved p-4 min-w-0 ${flash ? "is-new" : ""} ${hide ? "hidden md:block" : ""}`}>
     <p className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] bw-muted mb-3">
       {icon} {title}
     </p>
@@ -19,24 +41,27 @@ const Column = ({ icon, title, children, hide }: { icon: React.ReactNode; title:
 
 const Empty = ({ children }: { children: React.ReactNode }) => <p className="text-xs bw-faint leading-relaxed">{children}</p>;
 
-// What Glitch is keeping for this visitor, plus the demo smart-home devices (tap to switch them by hand too)
-// phone: "saved" shows reminders, lists and notes; "home" the devices; anything else hides all of it (md and up show everything)
-const GlitchWorld = ({ world, onChange, phonePanel }: { world: World; onChange: (w: World) => void; phonePanel?: string }) => {
+// What Glitch is keeping for this visitor: reminders, lists and to-dos, notes. (The smart home is HomePanel.)
+// Phones show it only on the "saved" tab; md and up always.
+const GlitchWorld = ({ world, onChange, phonePanel, coach, onCoachDone }: { world: World; onChange: (w: World) => void; phonePanel?: string; coach?: boolean; onCoachDone?: () => void }) => {
   const saved = phonePanel !== "saved";
-  const home = phonePanel !== "home";
-  const setDevice = <K extends keyof Devices>(k: K, v: Devices[K]) => onChange({ ...world, devices: { ...world.devices, [k]: v } });
-  const d = world.devices;
   const reminders = world.reminders.filter((r) => !r.done).sort((a, b) => a.at.localeCompare(b.at));
   const lists = Object.entries(world.lists);
-
-  const tile = (on: boolean) =>
-    `flex flex-col items-start gap-1.5 p-2.5 rounded-lg border text-left cursor-pointer transition-colors ${
-      on ? "bw-accent-border bw-tint" : "bw-rule bw-row-link"
-    }`;
+  // something was just added: that box glows softly for a moment
+  const newReminder = useGrew(reminders.length);
+  const newListItem = useGrew(lists.reduce((n, [, items]) => n + items.length, 0) + world.todos.length);
+  const newNote = useGrew(world.notes.length);
 
   return (
-    <div className={`${phonePanel === "camera" ? "hidden md:grid" : "grid"} md:grid-cols-2 lg:grid-cols-4 border-t bw-rule divide-y md:divide-y-0 md:divide-x divide-[var(--border-color)]`}>
-      <Column icon={<Bell className="w-3.5 h-3.5" />} title="Reminders" hide={saved}>
+    <div className={`relative ${phonePanel === "saved" ? "grid" : "hidden md:grid"} md:grid-cols-3 border-t bw-rule divide-y md:divide-y-0 md:divide-x divide-[var(--border-color)] ${coach ? "bw-coach-target" : ""}`}>
+      {coach && (
+        <CoachTip
+          title="Glitch keeps it here"
+          text="Reminders, lists, to-dos and notes you give Glitch show up in these boxes, and stay in this browser. Ask it to remove one, or use ✕."
+          onDone={() => onCoachDone?.()}
+        />
+      )}
+      <Column icon={<Bell className="w-3.5 h-3.5" />} title="Reminders" hide={saved} flash={newReminder}>
         {reminders.length ? (
           <ul className="space-y-1.5">
             {reminders.map((r) => (
@@ -60,7 +85,7 @@ const GlitchWorld = ({ world, onChange, phonePanel }: { world: World; onChange: 
         )}
       </Column>
 
-      <Column icon={<ListChecks className="w-3.5 h-3.5" />} title="Lists & to-dos" hide={saved}>
+      <Column icon={<ListChecks className="w-3.5 h-3.5" />} title="Lists & to-dos" hide={saved} flash={newListItem}>
         {lists.length || world.todos.length ? (
           <div className="space-y-3 text-sm">
             {lists.map(([name, items]) => (
@@ -98,7 +123,7 @@ const GlitchWorld = ({ world, onChange, phonePanel }: { world: World; onChange: 
         )}
       </Column>
 
-      <Column icon={<NotebookPen className="w-3.5 h-3.5" />} title="Notes" hide={saved}>
+      <Column icon={<NotebookPen className="w-3.5 h-3.5" />} title="Notes" hide={saved} flash={newNote}>
         {world.notes.length ? (
           <ul className="space-y-1.5 text-sm">
             {world.notes.slice(0, 5).map((n, i) => (
@@ -112,29 +137,6 @@ const GlitchWorld = ({ world, onChange, phonePanel }: { world: World; onChange: 
         )}
       </Column>
 
-      <Column icon={<Plug className="w-3.5 h-3.5" />} title="Smart home · demo" hide={home}>
-        <div className="grid grid-cols-2 gap-2">
-          <button onClick={() => setDevice("lights", d.lights === "on" ? "off" : "on")} className={tile(d.lights === "on")}>
-            <Lightbulb className={`w-4 h-4 ${d.lights === "on" ? "text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)]" : "bw-faint"}`} />
-            <span className="text-xs">Lights · {d.lights}</span>
-          </button>
-          <button onClick={() => setDevice("fan", d.fan === "off" ? 2 : d.fan === 3 ? "off" : ((d.fan + 1) as 2 | 3))} className={tile(d.fan !== "off")}>
-            <Fan
-              className={`w-4 h-4 ${d.fan !== "off" ? "bw-accent animate-spin" : "bw-faint"}`}
-              style={d.fan !== "off" ? { animationDuration: `${1.2 / d.fan}s` } : undefined}
-            />
-            <span className="text-xs">Fan · {d.fan === "off" ? "off" : `speed ${d.fan}`}</span>
-          </button>
-          <button onClick={() => setDevice("ac", d.ac === "off" ? 24 : "off")} className={tile(d.ac !== "off")}>
-            <AirVent className={`w-4 h-4 ${d.ac !== "off" ? "text-sky-400" : "bw-faint"}`} />
-            <span className="text-xs">AC · {d.ac === "off" ? "off" : `${d.ac}°C`}</span>
-          </button>
-          <button onClick={() => setDevice("tv", d.tv === "on" ? "off" : "on")} className={tile(d.tv === "on")}>
-            <Tv className={`w-4 h-4 ${d.tv === "on" ? "text-sky-400" : "bw-faint"}`} />
-            <span className="text-xs">TV · {d.tv}</span>
-          </button>
-        </div>
-      </Column>
     </div>
   );
 };

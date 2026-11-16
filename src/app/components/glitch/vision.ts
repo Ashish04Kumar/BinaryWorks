@@ -1,6 +1,6 @@
 // Glitch's eyes in the browser, ported from glitch/vision/: YOLO11n (people and objects) and MediaPipe's
 // gesture recognizer run on the visitor's webcam, on their device. Nothing is uploaded.
-// The thresholds (hold frames, cooldowns, swipe and wave rules) are the ones in steady.py and motion.py.
+// It only reports what it sees (people in view, a gesture that held); Umbrella's rules decide what happens.
 
 import type { GestureRecognizer } from "@mediapipe/tasks-vision";
 
@@ -17,86 +17,72 @@ const GESTURE_NAMES: Record<string, string> = {
 export type { Box } from "./yoloDecode";
 import type { Box } from "./yoloDecode";
 
-// ---------- steady.py: GestureGate ----------
-// Frame counts scaled for ~12 checks a second, keeping steady.py's hold times (~0.25 s, ~0.65 s for toggles)
-const HOLD_FRAMES = 3, RELEASE_FRAMES = 2, COOLDOWN = 1.5, TOGGLE_HOLD_FRAMES = 8, TOGGLE_COOLDOWN = 3.0;
+// ---------- steady signals (the same timings as Umbrella's companion/vision/steady.py) ----------
+// A pose must hold a moment before it counts, fires once, and fires again only after the hand let go and a
+// cooldown. Poses in `repeat` (fan faster/slower, lamp brighter/dimmer) fire again every REPEAT_EVERY seconds
+// while held, marked as repeats. About 10 checks a second here, so 3 checks ≈ Umbrella's 5 frames at 15 fps.
+const HOLD_FRAMES = 3, RELEASE_FRAMES = 3, COOLDOWN = 1.5, REPEAT_EVERY = 0.8;
 class GestureGate {
   label: string | null = null;
   count = 0;
   fired: string | null = null;
-  absent = 0;
+  away = 0;
   lastFired = new Map<string, number>();
-  constructor(private toggles: Set<string>) {}
-  update(t: number, label: string | null): string | null {
+  constructor(private repeat: Set<string>) {}
+  /** The pose on the frame it becomes steady, or again while a repeat pose is held; else null. */
+  update(t: number, label: string | null): { name: string; repeat: boolean } | null {
     if (label === this.label) this.count += 1;
     else [this.label, this.count] = [label, 1];
     if (label !== this.fired) {
-      this.absent += 1;
-      if (this.absent >= RELEASE_FRAMES) this.fired = null;
-    } else this.absent = 0;
-    const toggle = label !== null && this.toggles.has(label);
-    const [hold, cooldown] = toggle ? [TOGGLE_HOLD_FRAMES, TOGGLE_COOLDOWN] : [HOLD_FRAMES, COOLDOWN];
-    if (label && this.count >= hold && this.fired !== label && t - (this.lastFired.get(label) ?? -1e9) >= cooldown) {
-      this.fired = label;
-      this.absent = 0;
+      this.away += 1;
+      if (this.away >= RELEASE_FRAMES) this.fired = null; // the hand let go
+    } else this.away = 0;
+    if (label && this.count >= HOLD_FRAMES && this.fired !== label && t - (this.lastFired.get(label) ?? -1e9) >= COOLDOWN) {
+      [this.fired, this.away] = [label, 0];
       this.lastFired.set(label, t);
-      return label;
+      return { name: label, repeat: false };
+    }
+    if (label && label === this.fired && this.repeat.has(label) && t - (this.lastFired.get(label) ?? -1e9) >= REPEAT_EVERY) {
+      this.lastFired.set(label, t); // still held: one more step
+      return { name: label, repeat: true };
     }
     return null;
   }
 }
 
-// ---------- motion.py: swipes and a wave ----------
-const SWIPE_DISTANCE = 0.25, SWIPE_TIME = 0.6, SWIPE_STRAIGHTNESS = 2.0, WAVE_TIME = 1.6, WAVE_TURNS = 3, WAVE_STEP = 0.03, MOTION_COOLDOWN = 1.0;
-class MotionDetector {
-  track: [number, number, number, boolean][] = [];
-  quietUntil = 0;
-  reset() {
-    this.track = [];
-  }
-  update(t: number, x: number, y: number, openPalm: boolean): string | null {
-    this.track.push([t, x, y, openPalm]);
-    while (this.track.length && t - this.track[0][0] > WAVE_TIME) this.track.shift();
-    if (t < this.quietUntil) return null;
-    const found = this.swipe(t) || this.wave();
-    if (found) {
-      this.quietUntil = t + MOTION_COOLDOWN;
-      this.track = [];
+// People in view: a new count is reported once it has held for a few checks (and a drop to nobody only after
+// 2 s), so one missed frame does not empty the room. The first count is always reported.
+const SEEN_CHECKS = 3, GONE_AFTER = 2.0;
+class PeopleSteady {
+  private reported: number | null = null;
+  private candidate = -1;
+  private hits = 0;
+  private since = 0;
+  update(t: number, n: number): number | null {
+    if (n === this.reported) {
+      this.candidate = -1;
+      return null;
     }
-    return found;
-  }
-  private swipe(t: number) {
-    const recent = this.track.filter((p) => t - p[0] <= SWIPE_TIME);
-    if (recent.length < 3) return null;
-    const dx = recent[recent.length - 1][1] - recent[0][1];
-    const dy = recent[recent.length - 1][2] - recent[0][2];
-    if (Math.abs(dx) >= SWIPE_DISTANCE && Math.abs(dx) >= SWIPE_STRAIGHTNESS * Math.abs(dy)) return dx > 0 ? "swipe_right" : "swipe_left";
-    if (Math.abs(dy) >= SWIPE_DISTANCE && Math.abs(dy) >= SWIPE_STRAIGHTNESS * Math.abs(dx)) return dy > 0 ? "swipe_down" : "swipe_up";
+    if (n !== this.candidate) [this.candidate, this.hits, this.since] = [n, 1, t];
+    else this.hits += 1;
+    if (this.hits >= SEEN_CHECKS && (n > 0 || t - this.since >= GONE_AFTER || this.reported === null)) {
+      this.reported = n;
+      return n;
+    }
     return null;
-  }
-  private wave() {
-    const points = this.track.filter((p) => p[3]);
-    if (points.length < 6) return null;
-    let turns = 0, direction = 0, anchor = points[0][1];
-    for (const [, x] of points.slice(1)) {
-      const step = x - anchor;
-      if (Math.abs(step) < WAVE_STEP) continue;
-      const now = step > 0 ? 1 : -1;
-      if (direction && now !== direction) turns += 1;
-      direction = now;
-      anchor = x;
-    }
-    return turns >= WAVE_TURNS ? "wave" : null;
   }
 }
 
 export type VisionEvents = {
   onFrame: (boxes: Box[], hands: { x: number; y: number; gesture: string | null }[]) => void;
-  onGesture: (name: string) => void;
+  /** a pose that held (repeat = still held, one more step) */
+  onGesture: (name: string, repeat: boolean) => void;
+  /** how many people are in view, reported only when it changes */
+  onPeople: (count: number) => void;
   onStatus: (text: string) => void;
 };
 
-export async function startVision(video: HTMLVideoElement, events: VisionEvents, toggles: Set<string>) {
+export async function startVision(video: HTMLVideoElement, events: VisionEvents, repeat: Set<string>) {
   events.onStatus("starting camera…");
   const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false });
   video.srcObject = stream;
@@ -133,22 +119,34 @@ export async function startVision(video: HTMLVideoElement, events: VisionEvents,
   const [gestures]: [GestureRecognizer, void] = await Promise.all([makeGestures("CPU"), workerReady]);
   events.onStatus("watching");
 
-  const gate = new GestureGate(toggles);
-  const motion = new MotionDetector();
+  const gate = new GestureGate(repeat);
+  const people = new PeopleSteady();
 
   let boxes: Box[] = [];
   let lastHands: { x: number; y: number; gesture: string | null }[] = [];
   let running = true;
   let yoloBusy = false;
   let lastGestureCheck = 0;
+  let lastYolo = 0;
+  let lastSomeone = -1e9; // when a person or a hand was last seen (hands are checked often only then)
   let raf = 0;
-  // About 12 checks a second: plenty for gestures, and it leaves the page room to animate
-  const GESTURE_EVERY_MS = 80;
+  // Kept light so the page stays smooth: people ~6 checks a second (Umbrella's camera uses 5), hands ~10 a
+  // second while someone is in view and ~3 a second when nobody is (enough to notice a hand coming up)
+  const YOLO_EVERY_MS = 160;
+  const GESTURE_EVERY_MS = 100;
+  const GESTURE_IDLE_MS = 330;
+  // Nothing runs while the preview is off screen or the tab is hidden
+  let inView = true;
+  const seen = new IntersectionObserver(([e]) => (inView = e.isIntersecting));
+  seen.observe(video);
 
   // a new frame goes to the worker as soon as it has answered the last one
   worker.onmessage = (e) => {
     if (e.data?.type === "boxes") {
       boxes = e.data.boxes as Box[];
+      if (boxes.some((b) => b.label === "person")) lastSomeone = performance.now();
+      const seen = people.update(performance.now() / 1000, boxes.filter((b) => b.label === "person").length);
+      if (seen !== null) events.onPeople(seen);
       events.onFrame(boxes, lastHands);
     } else if (e.data?.type === "error") console.error("yolo worker:", e.data.message);
     yoloBusy = false;
@@ -163,11 +161,14 @@ export async function startVision(video: HTMLVideoElement, events: VisionEvents,
   const loop = () => {
     if (!running) return;
     raf = requestAnimationFrame(loop);
-    if (video.readyState < 2) return;
+    if (video.readyState < 2 || !inView || document.hidden) return;
     const now = performance.now();
-    // YOLO runs back to back: the next frame starts as soon as the last one is done
-    if (!yoloBusy) sendFrame();
-    if (now - lastGestureCheck < GESTURE_EVERY_MS) return;
+    if (!yoloBusy && now - lastYolo >= YOLO_EVERY_MS) {
+      lastYolo = now;
+      sendFrame();
+    }
+    const someone = now - lastSomeone < 2000;
+    if (now - lastGestureCheck < (someone ? GESTURE_EVERY_MS : GESTURE_IDLE_MS)) return;
     lastGestureCheck = now;
     const result = gestures.recognizeForVideo(video, now);
     const t = now / 1000;
@@ -177,14 +178,9 @@ export async function startVision(video: HTMLVideoElement, events: VisionEvents,
       const wrist = marks[0];
       return { x: wrist.x, y: wrist.y, gesture: name };
     });
-    const main = hands[0];
-    const fired = gate.update(t, main?.gesture ?? null);
-    if (fired) events.onGesture(fired);
-    if (main) {
-      // the camera image is not mirrored, so a swipe to the person's right moves left in the picture
-      const moved = motion.update(t, 1 - main.x, main.y, main.gesture === "open_palm");
-      if (moved) events.onGesture(moved);
-    } else motion.reset();
+    if (hands.length) lastSomeone = now;
+    const fired = gate.update(t, hands[0]?.gesture ?? null);
+    if (fired) events.onGesture(fired.name, fired.repeat);
     lastHands = hands;
     events.onFrame(boxes, hands);
   };
@@ -193,6 +189,7 @@ export async function startVision(video: HTMLVideoElement, events: VisionEvents,
   return () => {
     running = false;
     cancelAnimationFrame(raf);
+    seen.disconnect();
     stream.getTracks().forEach((t) => t.stop());
     gestures.close();
     worker.terminate();

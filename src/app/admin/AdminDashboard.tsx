@@ -212,7 +212,7 @@ const AdminDashboard = () => {
               <input type="checkbox" checked={showBots} onChange={(e) => setShowBots(e.target.checked)} /> show bots and scripts
             </label>
           </div>
-          <ul data-lenis-prevent className="max-h-[70vh] overflow-y-auto divide-y divide-[var(--border-color)]">
+          <ul data-scroll-box className="max-h-[70vh] overflow-y-auto divide-y divide-[var(--border-color)]">
             {sessions.length === 0 && <li className="p-4 text-sm bw-faint">No visits yet.</li>}
             {sessions.map((x) => (
               <li key={x.sid}>

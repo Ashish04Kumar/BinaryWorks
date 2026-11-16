@@ -6,12 +6,28 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import type { Devices } from "./world";
+import type { HomeDevice } from "./umbrella";
 
-export type HomeScene = { set: (d: Devices) => void; setPaused: (p: boolean) => void; dispose: () => void };
+export type HomeScene = { set: (d: HomeDevice[]) => void; setPaused: (p: boolean) => void; dispose: () => void };
+
+// What the room shows, from Umbrella's devices: the living room light lights the room (and the floor lamp),
+// the bedroom lamp is the desk lamp (at its brightness), the fan spins at its speed (0-5), the AC and the TV.
+type Look = { room: number; lamp: number; fan: number; ac: number | null; tv: boolean };
+function lookOf(devices: HomeDevice[]): Look {
+  const by = (id: string) => devices.find((d) => d.id === id);
+  const lamp = by("desk_lamp");
+  const ac = by("ac");
+  return {
+    room: by("living_light")?.on ? 1 : 0,
+    lamp: lamp?.on ? (lamp.brightness ?? 100) / 100 : 0,
+    fan: by("fan")?.speed ?? 0,
+    ac: ac?.on ? (ac.temperature ?? 24) : null,
+    tv: Boolean(by("tv")?.on),
+  };
+}
 
 const BASE = "/models/home/";
-const FAN_RPS = { off: 0, 1: 1.2, 2: 2.2, 3: 3.4 } as const; // turns per second at each speed
+const FAN_RPS = [0, 0.9, 1.6, 2.3, 3.0, 3.8]; // turns per second at speed 0-5
 
 // Soft round glow, drawn once and reused for lamp bulbs and the AC's airflow
 function glowTexture() {
@@ -48,7 +64,7 @@ function fit(obj: THREE.Object3D, width: number, axis: "x" | "y" = "x") {
   return g;
 }
 
-export async function createHomeScene(host: HTMLElement, initial: Devices): Promise<HomeScene> {
+export async function createHomeScene(host: HTMLElement, initial: HomeDevice[]): Promise<HomeScene> {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(Math.max(window.devicePixelRatio, 1.5), 2.5)); // render above CSS size so edges and textures stay crisp
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -203,11 +219,12 @@ export async function createHomeScene(host: HTMLElement, initial: Devices): Prom
   }
 
   // ---- state and animation ----
-  let devices = initial;
-  let light = initial.lights === "on" ? 1 : 0; // eased 0..1
-  let tv = initial.tv === "on" ? 1 : 0;
-  let acOn = initial.ac !== "off" ? 1 : 0;
-  let fanSpeed: number = FAN_RPS[initial.fan];
+  let look = lookOf(initial);
+  let light = look.room; // eased 0..1
+  let lampLevel = look.lamp;
+  let tv = look.tv ? 1 : 0;
+  let acOn = look.ac !== null ? 1 : 0;
+  let fanSpeed = FAN_RPS[look.fan] ?? 0;
 
   const drawAcDisplay = () => {
     const g = acDisplayCanvas.getContext("2d")!;
@@ -216,7 +233,7 @@ export async function createHomeScene(host: HTMLElement, initial: Devices): Prom
     g.font = "bold 34px ui-monospace, monospace";
     g.textAlign = "center";
     g.textBaseline = "middle";
-    g.fillText(devices.ac === "off" ? "" : `${devices.ac}°`, 64, 26);
+    g.fillText(look.ac === null ? "" : `${look.ac}°`, 64, 26);
     acDisplayTex.needsUpdate = true;
   };
   drawAcDisplay();
@@ -272,10 +289,11 @@ export async function createHomeScene(host: HTMLElement, initial: Devices): Prom
     const t = clock.elapsedTime;
     const ease = (cur: number, target: number, rate: number) => cur + (target - cur) * (1 - Math.exp(-rate * dt));
 
-    light = ease(light, devices.lights === "on" ? 1 : 0, 5);
-    tv = ease(tv, devices.tv === "on" ? 1 : 0, 7);
-    acOn = ease(acOn, devices.ac !== "off" ? 1 : 0, 3);
-    fanSpeed = ease(fanSpeed, FAN_RPS[devices.fan], devices.fan === "off" ? 0.6 : 1.2); // spins down slowly
+    light = ease(light, look.room, 5);
+    lampLevel = ease(lampLevel, look.lamp, 6);
+    tv = ease(tv, look.tv ? 1 : 0, 7);
+    acOn = ease(acOn, look.ac !== null ? 1 : 0, 3);
+    fanSpeed = ease(fanSpeed, FAN_RPS[look.fan] ?? 0, look.fan === 0 ? 0.6 : 1.2); // spins down slowly
 
     tint.copy(night).lerp(day, light);
     tint.r += tv * 0.03 * (1 - light);
@@ -286,10 +304,10 @@ export async function createHomeScene(host: HTMLElement, initial: Devices): Prom
     scene.environmentIntensity = 0.15 + light * 0.4;
     warm.intensity = light * 2.2;
     lampGlow.material.opacity = light * 0.9;
-    deskGlow.material.opacity = light * 0.8;
+    deskGlow.material.opacity = lampLevel * 0.8;
     for (const m of lampLightMats) {
       m.emissive.setRGB(1, 0.85, 0.6);
-      m.emissiveIntensity = light * 2.5;
+      m.emissiveIntensity = lampLevel * 2.5;
     }
 
     screen.material.opacity = tv;
@@ -317,8 +335,9 @@ export async function createHomeScene(host: HTMLElement, initial: Devices): Prom
 
   return {
     set(d) {
-      const acChanged = d.ac !== devices.ac;
-      devices = d;
+      const next = lookOf(d);
+      const acChanged = next.ac !== look.ac;
+      look = next;
       if (acChanged) drawAcDisplay();
     },
     setPaused(p) {
