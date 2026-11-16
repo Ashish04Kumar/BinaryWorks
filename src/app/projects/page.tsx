@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Github } from "lucide-react";
-import ProjectModal from "../components/ProjectModal";
 import ClampHtml from "../components/ClampHtml";
 import { projects, type ProjectItem } from "@/data/projects";
 
@@ -25,7 +24,6 @@ const projectLinks = (p: ProjectItem) =>
 const Projects = async ({ searchParams }: any) => {
   const params = await searchParams;
   const filter = params?.filter ?? "all";
-  const selectedProjectTitle = params?.project ?? "";
 
   const countFor = (key: string) =>
     key === "all" ? projects.length : projects.filter((p) => p.category === key).length;
@@ -34,8 +32,6 @@ const Projects = async ({ searchParams }: any) => {
 
   const filteredProjects =
     filter === "all" ? projects : projects.filter((p) => p.category === filter);
-
-  const activeProject = projects.find((p) => p.title === selectedProjectTitle);
 
   return (
     <div className="theme-bg-primary theme-text-primary min-h-screen">
@@ -85,6 +81,7 @@ const Projects = async ({ searchParams }: any) => {
                   alt={project.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 560px"
+                  unoptimized={project.image.endsWith(".svg")}
                   className="object-cover object-top transition-transform duration-500 hover:scale-105"
                 />
               </div>
@@ -103,15 +100,6 @@ const Projects = async ({ searchParams }: any) => {
                   {project.demo && (
                     <Link href={project.demo} className="btn btn-primary !h-9 !px-4 !text-[13px]">
                       Try it live ↗
-                    </Link>
-                  )}
-                  {project.readMore && (
-                    <Link
-                      href={`?filter=${filter}&project=${encodeURIComponent(project.title)}`}
-                      scroll={false}
-                      className="px-4 py-2 rounded-md bw-accent-bg text-white hover:opacity-90 transition-opacity"
-                    >
-                      walkthrough →
                     </Link>
                   )}
                   {links.map((l) => (
@@ -134,9 +122,6 @@ const Projects = async ({ searchParams }: any) => {
         })}
       </div>
 
-      {activeProject && activeProject.readMore && (
-        <ProjectModal isOpen={true} title={activeProject.title} slides={activeProject.readMore} />
-      )}
     </div>
   );
 };

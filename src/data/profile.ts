@@ -95,7 +95,7 @@ export const experience: Experience[] = [
     location: "Ahmedabad, India",
     period: "Aug 2023 – Present",
     description:
-      "Full-stack work across frontend, backend and GenAI. Worked on BotStream, a RAG chatbot platform, in both the Next.js app and the Flask backend, and built enterprise dashboards such as a bilingual fund-management system for a UAE ministry.",
+      "Full-stack work across frontend, backend and GenAI. Worked on a RAG chatbot platform that answers from company documents, in both the Next.js app and the Flask backend, and built enterprise dashboards such as a bilingual fund-management system for a UAE ministry.",
     skills: ["Next.js", "React", "TypeScript", "Python", "Flask", "PostgreSQL", "LangChain", "RAG"],
   },
   {
@@ -154,11 +154,12 @@ export const certifications = [
 
 // Projects shown on the home page, in order. `title` must match src/data/projects.ts.
 export const featuredProjects = [
-  { title: "BotStream: Smart RAG Chatbot Platform", label: "BotStream" },
-  { title: "Fund Management Dashboard for U.A.E Ministry of Gov.", label: "UAE Fund Management" },
-  { title: "Firearms Training & Analytics Dashboard", label: "Firearms Training Analytics" },
+  { title: "Smart RAG Chatbot Platform", label: "RAG Chatbot Platform" },
+  { title: "Hilux Booking Portal for Toyota GB", label: "Toyota GB Hilux Booking Portal" },
+  { title: "Fund Management Dashboard for UAE Ministry", label: "UAE Ministry Fund Management" },
+  { title: "Live Range Training & Shot Analytics", label: "Live Range Training & Shot Analytics" },
   { title: "Cultural Events Platform", label: "Cultural Events Platform" },
-  { title: "Team Collaboration Tool", label: "Threadflows" },
+  { title: "Team Collaboration Tool", label: "Team Collaboration Tool" },
   { title: "Global Travel Planner", label: "Global Travel Planner" },
 ];
 
