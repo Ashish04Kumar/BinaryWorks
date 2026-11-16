@@ -15,7 +15,7 @@ const navItems = [
 
 // The site's floating bar. Three things make it its own:
 //  - the mark on the left is Glitch's eyes: they follow the cursor and blink now and then,
-//  - one soft pill glides between the links (to the one hovered, back to the current page),
+//  - one soft pill glides between the links as you hover them (the current page has just a small dot),
 //  - scrolling tightens the bar and draws the page's progress along its bottom edge.
 const Navigation = () => {
   const pathname = usePathname();
@@ -27,10 +27,10 @@ const Navigation = () => {
   const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
   const [compact, setCompact] = useState(false);
 
-  const current = navItems.findIndex((n) => n.path === pathname);
-  const target = hovered ?? (current >= 0 ? current : null);
+  // the pill shows only while a link is hovered; the current page is marked by its dot alone
+  const target = hovered;
 
-  // the pill sits under the hovered link, else under the current page's
+  // the pill glides to the hovered link
   useEffect(() => {
     const place = () => {
       const el = target === null ? null : links.current[target];

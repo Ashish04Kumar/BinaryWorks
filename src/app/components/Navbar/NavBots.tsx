@@ -51,7 +51,7 @@ const NavBots = () => {
       bots.forEach((b, i) => {
         if (b.x < 0 || b.x > width) b.x = (width / (COUNT + 1)) * (i + 1); // (re)place after a resize
         const node = nodes[i];
-        const dx = mouse ? mouse.x - (zone.left + b.x + 6) : Infinity;
+        const dx = mouse ? mouse.x - (zone.left + b.x + 7) : Infinity; // from the robot's middle
         const near = Math.abs(dx) < NEAR;
         let walking = false;
         if (Math.abs(dx) < TOO_NEAR) {
