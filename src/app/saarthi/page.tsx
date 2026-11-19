@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowUpRight, Github } from "lucide-react";
 import Playroom from "./Playroom";
+import Sprite from "./Sprite";
+import type { SpriteState } from "./sprites";
 import "./saarthi.scss";
 
 export const metadata: Metadata = {
@@ -12,114 +14,28 @@ export const metadata: Metadata = {
 
 const GITHUB = "https://github.com/Ashish04Kumar/saarthi";
 
-// Every feature, grouped. Source: the app's README and features guide.
-const FEATURES: { title: string; icon: string; items: string[] }[] = [
-  {
-    title: "Knows what you're doing",
-    icon: "👀",
-    items: [
-      "Fast typing: types furiously and sweats",
-      "Slow typing: hand on chin, thought bubble",
-      "Scrolling (mouse or touchpad): eyes go up and down",
-      "Videos and tutorials (YouTube, Udemy, Coursera…): grabs popcorn, with lines for each site",
-      "Music playing: comments on the music now and then",
-      "3 min without input: dozes off · 15 min: falls asleep (Zzz) · you come back: jumps up, “Aa gaye!”",
-      "Counts how fast you type, never what you type",
-    ],
-  },
-  {
-    title: "Alive when you touch it",
-    icon: "👆",
-    items: [
-      "Click the head: “Oye!” and rubs its head",
-      "Click the body: giggles (tickled)",
-      "Click 4 times in 3 seconds: gets dizzy",
-      "Drag it anywhere on the screen",
-      "Walking mode: strolls along the bottom of the screen when you're idle",
-      "Double-click: opens the panel · right-click: the full menu",
-    ],
-  },
-  {
-    title: "Status: Working, Break, Lunch",
-    icon: "☕",
-    items: [
-      "Pick the minutes for a break or lunch (Break 5, Lunch 60 by default)",
-      "Break: walks around with chai, countdown in the speech bubble",
-      "Keep typing ~45 s on a break and it assumes something important came up: break cancelled, offered again in 15 min",
-      "Lunch: eats for 10–15 min, then strolls slowly and stops to think",
-      "Change the time left while it runs, or save it as your default",
-      "Click the active status again to end it",
-    ],
-  },
-  {
-    title: "Wellness",
-    icon: "🧘",
-    items: [
-      "Suggests a break after 50 minutes of work",
-      "Guided breathing every 20 minutes: 5 breaths of 4 s in, 2 s hold, 6 s out",
-      "Reminds you to stretch and drink water",
-      "No-smoking motivation list: one line every 40 min with facts on lungs, heart, hair, skin and brain",
-      "Your own quote lists, each with its own gap",
-    ],
-  },
-  {
-    title: "Reminders, notes and calendar",
-    icon: "⏰",
-    items: [
-      "Reminders: once, daily, weekdays, weekly, monthly, hourly or every N minutes",
-      "At reminder time it holds up a “!” sign with a card: Done / Skipped / 10 min / 1 h",
-      "Tracks what you actually did: “Is hafte: N ✓ kiya · N ✗ nahi kiya”, last 7 days and 40 recent entries",
-      "Notes that work as a to-do list, with search and pin",
-      "Calendar with your own events plus read-only Google / Outlook / Apple sync (iCal links, every 15 min)",
-      "Event card 10 minutes before an event",
-    ],
-  },
-  {
-    title: "Your day, outside the screen",
-    icon: "🌦",
-    items: [
-      "Morning brief the first time you're active each day: today's events, reminders and weather",
-      "Weather for your city (automatic or chosen), updated every 30 min, with a warning before rain",
-      "Outfits for the weather: umbrella, beanie and scarf, or shades",
-      "Traffic home 15 min before logout on work days: car or two-wheeler, free estimate, TomTom or Google",
-    ],
-  },
-  {
-    title: "Characters and looks",
-    icon: "🎨",
-    items: [
-      "18 animations on the 3D Saarthi character",
-      "Or pick Bit, a cartoon robot, or your own skins",
-      "3D avatar maker for a full-body character of yourself",
-      "Panel and full window in dark or light theme",
-      "Hinglish or English",
-    ],
-  },
-  {
-    title: "Built for real use",
-    icon: "🛠",
-    items: [
-      "Quiet mode for screen sharing: tiny in a corner, no pop-ups; reminders wait for you",
-      "“What I see…”: live diagnostics (detectors, keys/sec, idle, media, mood, next break)",
-      "“Try features” menu to trigger any feature on demand",
-      "Starts with your computer, one instance only, one-command installers",
-      "Linux tested (X11 and Wayland); Windows and macOS code complete",
-      "Private: notes, reminders and settings stay in your config folder",
-    ],
-  },
+// The main things it does, each shown with its own animation. The rest are one-line chips.
+const TILES: { state: SpriteState; title: string; line: string; tint: string }[] = [
+  { state: "typing_fast", title: "Reacts to your work", line: "Sweats when you type fast, ponders when you slow down.", tint: "#fde68a" },
+  { state: "watching", title: "Watches with you", line: "Grabs popcorn for YouTube and tutorials.", tint: "#fecaca" },
+  { state: "sleeping", title: "Knows you're away", line: "Dozes off, then jumps up when you're back.", tint: "#c7d2fe" },
+  { state: "break", title: "Breaks & lunch", line: "Takes chai and lunch with you, on a timer.", tint: "#fed7aa" },
+  { state: "breathe", title: "Breathe & stretch", line: "Guided breathing and nudges to move.", tint: "#bbf7d0" },
+  { state: "alert", title: "Reminders & to-dos", line: "Holds up a sign, tracks done or skipped.", tint: "#fde047" },
+  { state: "giggle", title: "Fun to poke", line: "Poke, tickle, or click it dizzy.", tint: "#fbcfe8" },
+  { state: "walk", title: "Walks around", line: "Strolls along your screen when you're idle.", tint: "#a5f3fc" },
 ];
 
-const WHEN: [string, string][] = [
-  ["App starts", "Welcome tips on first run; a card if typing detection needs permission"],
-  ["First activity of the day", "Morning brief: events, reminders and weather"],
-  ["Reminder time", "Holds up a “!” sign, plus a card to mark it done or skipped"],
-  ["10 min before an event", "Event card (calendars sync every 15 min)"],
-  ["50 min of work", "Suggests a break"],
-  ["Every 20 min", "Offers guided breathing"],
-  ["Every 40 min", "A no-smoking motivation line"],
-  ["Every 20–40 min", "A random fun line (skipped if something important is showing)"],
-  ["Every 30 min", "Weather update; warns before rain"],
-  ["15 min before logout", "Time to get home and the traffic"],
+const CHIPS = [
+  "📅 Synced calendar",
+  "🌅 Morning brief",
+  "🌦 Weather & outfits",
+  "🚗 Traffic home",
+  "🤫 Quiet mode for calls",
+  "🧑 3D avatar maker",
+  "🗣 Hinglish / English",
+  "🔒 Counts speed, never what you type",
+  "🐧 Linux · Windows · macOS",
 ];
 
 const SHOTS = [
@@ -142,7 +58,7 @@ export default function SaarthiPage() {
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <h1 className="text-4xl md:text-6xl font-semibold tracking-tight">Saarthi</h1>
             <span className="text-2xl md:text-3xl bw-muted">सारथी</span>
-            <span className="sr-vibe rounded-full px-3 py-1 text-xs font-semibold tracking-wide">✨ Vibe-coded</span>
+            <span className="bw-vibe-tag rounded-full px-3 py-1 text-xs font-bold tracking-wide uppercase">✨ Vibe-coded</span>
           </div>
           <p className="text-base md:text-xl bw-muted max-w-3xl leading-relaxed">
             An animated desktop companion that lives on your screen and reacts to what you do. Type fast and it sweats,
@@ -175,31 +91,27 @@ export default function SaarthiPage() {
         <Playroom />
       </section>
 
-      {/* every feature */}
+      {/* what it does */}
       <section className="border-t bw-rule">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-8">Everything it does</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {FEATURES.map((g) => (
-              <div key={g.title} className="rounded-2xl border bw-rule theme-bg-card p-5">
-                <div className="text-2xl">{g.icon}</div>
-                <h3 className="font-semibold mt-2 mb-3">{g.title}</h3>
-                <ul className="space-y-2 text-[13.5px] bw-muted leading-snug">
-                  {g.items.map((it) => (
-                    <li key={it} className="flex gap-2"><span className="bw-accent">•</span><span>{it}</span></li>
-                  ))}
-                </ul>
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">What it does</h2>
+          <p className="bw-muted mt-2 mb-8">A buddy for your workday, in eight moods.</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            {TILES.map((t) => (
+              <div key={t.state} className="sr-tile rounded-2xl border bw-rule theme-bg-card overflow-hidden">
+                <div className="sr-tile-art grid place-items-end justify-center h-[160px] md:h-[180px] overflow-hidden" style={{ ["--tint" as string]: t.tint }}>
+                  <Sprite state={t.state} size={190} />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-[15px] leading-tight">{t.title}</h3>
+                  <p className="text-[13px] bw-muted mt-1 leading-snug">{t.line}</p>
+                </div>
               </div>
             ))}
           </div>
-
-          <h3 className="text-xl font-semibold tracking-tight mt-12 mb-4">When it does what</h3>
-          <div className="rounded-2xl border bw-rule overflow-hidden">
-            {WHEN.map(([when, what], i) => (
-              <div key={when} className={`grid sm:grid-cols-[240px_1fr] gap-1 sm:gap-6 px-5 py-3 text-sm ${i ? "border-t bw-rule" : ""}`}>
-                <span className="font-mono text-[13px] bw-accent">{when}</span>
-                <span className="bw-muted">{what}</span>
-              </div>
+          <div className="flex flex-wrap gap-2 mt-6">
+            {CHIPS.map((c) => (
+              <span key={c} className="rounded-full border bw-rule theme-bg-card px-3 py-1.5 text-[13px]">{c}</span>
             ))}
           </div>
         </div>

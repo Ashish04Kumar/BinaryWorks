@@ -1,26 +1,76 @@
 // Saarthi page: the playroom stage and small animations.
-.sr-stage {
-  background:
-    radial-gradient(600px 300px at 20% 0%, color-mix(in srgb, #a78bfa 22%, transparent), transparent 70%),
-    radial-gradient(600px 300px at 90% 100%, color-mix(in srgb, #fbbf24 18%, transparent), transparent 70%),
-    var(--bg-subtle);
+// The laptop around the playroom: dark bezel, Ubuntu's wallpaper, a silver base
+.sr-laptop {
+  padding: 12px 12px 14px;
+  border-radius: 20px 20px 10px 10px;
+  background: linear-gradient(180deg, #2a2a30, #151519);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 30px 60px -30px rgba(0, 0, 0, 0.55);
+  position: relative;
+  &::before { // webcam
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    width: 5px;
+    height: 5px;
+    margin-left: -2.5px;
+    border-radius: 50%;
+    background: #3a3a44;
+  }
 }
-.sr-floor {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--text-primary) 6%, transparent), color-mix(in srgb, var(--text-primary) 2%, transparent));
-  border-top: 1px solid var(--border-color);
+.sr-screen {
+  border-radius: 6px;
+  background:
+    radial-gradient(70% 90% at 75% 110%, #f2711c 0%, rgba(242, 113, 28, 0) 60%),
+    radial-gradient(60% 80% at 20% 100%, #c7375c 0%, rgba(199, 55, 92, 0) 65%),
+    radial-gradient(90% 70% at 50% -10%, #5e2750 0%, rgba(94, 39, 80, 0) 70%),
+    linear-gradient(160deg, #2c001e, #4a0e3a 45%, #77216f);
+}
+.sr-topbar { background: rgba(0, 0, 0, 0.82); }
+.sr-dock { background: rgba(20, 8, 18, 0.55); backdrop-filter: blur(8px); border-right: 1px solid rgba(255, 255, 255, 0.06); }
+.sr-term { box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08); opacity: 0.94; }
+.sr-caret { animation: sr-caret 1s steps(1) infinite; }
+@keyframes sr-caret { 50% { opacity: 0; } }
+.sr-base {
+  position: relative;
+  height: 16px;
+  margin: 0 -4%;
+  border-radius: 0 0 16px 16px;
+  background: linear-gradient(180deg, #d9dbe0, #a9adb6 70%, #8a8e97);
+  box-shadow: 0 14px 24px -14px rgba(0, 0, 0, 0.5);
+  span { // the notch to open the lid
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 90px;
+    height: 6px;
+    margin-left: -45px;
+    border-radius: 0 0 8px 8px;
+    background: #9da1aa;
+  }
 }
 .sr-pop { animation: sr-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.3); }
 @keyframes sr-pop { from { opacity: 0; transform: translateY(6px) scale(0.96); } }
-.sr-stage .sr-pop[class*="-translate-x-1/2"] { animation-name: sr-pop-c; }
+[class] .sr-pop[class*="-translate-x-1/2"] { animation-name: sr-pop-c; }
 @keyframes sr-pop-c { from { opacity: 0; transform: translate(-50%, 6px) scale(0.96); } to { transform: translate(-50%, 0); } }
 .sr-dizzy { animation: sr-dizzy 0.35s ease-in-out 4; }
 @keyframes sr-dizzy { 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
 
-// "vibe-coded" label used on the page and in the banner
-.sr-vibe {
-  background: linear-gradient(90deg, #f472b6, #a78bfa, #38bdf8);
-  color: #fff;
-}
 @media (prefers-reduced-motion: reduce) {
-  .sr-pop, .sr-dizzy { animation: none; }
+  .sr-pop, .sr-dizzy, .sr-caret { animation: none; }
+}
+
+// "What it does" tiles: a tinted stage for each animation, a small lift on hover
+.sr-tile { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.sr-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-float); }
+.sr-tile-art {
+  background:
+    radial-gradient(70% 80% at 50% 100%, color-mix(in srgb, var(--tint) 70%, transparent), transparent 75%),
+    color-mix(in srgb, var(--tint) 22%, var(--bg-card));
+  border-bottom: 1px solid var(--border-color);
+}
+[data-theme='dark'] .sr-tile-art {
+  background:
+    radial-gradient(70% 80% at 50% 100%, color-mix(in srgb, var(--tint) 35%, transparent), transparent 75%),
+    color-mix(in srgb, var(--tint) 8%, var(--bg-card));
 }

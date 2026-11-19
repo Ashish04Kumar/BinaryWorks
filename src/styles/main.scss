@@ -703,15 +703,68 @@ a:hover > .bw-nav-eyes i { animation-duration: 1.4s; } // a quick double-take wh
 // Site banner for Saarthi (vibe-coded): soft gradient strip above the navbar
 .bw-vibe-banner {
   color: var(--text-primary);
-  background: linear-gradient(90deg, color-mix(in srgb, #f472b6 16%, var(--bg-primary)), color-mix(in srgb, #a78bfa 18%, var(--bg-primary)), color-mix(in srgb, #38bdf8 16%, var(--bg-primary)));
+  background: linear-gradient(90deg,
+    color-mix(in srgb, #ec4899 9%, var(--bg-primary)),
+    color-mix(in srgb, #8b5cf6 10%, var(--bg-primary)) 50%,
+    color-mix(in srgb, #0ea5e9 9%, var(--bg-primary)));
   border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  // a soft light that sweeps across now and then, to catch the eye
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, #fff 35%, transparent) 50%, transparent 70%);
+    transform: translateX(-100%);
+    animation: bw-vibe-sweep 6s ease-in-out infinite;
+    pointer-events: none;
+  }
 }
-.bw-vibe-banner a:hover .underline { text-decoration-thickness: 2px; }
+[data-theme='dark'] .bw-vibe-banner {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, #ec4899 10%, var(--bg-primary)),
+    color-mix(in srgb, #8b5cf6 12%, var(--bg-primary)) 50%,
+    color-mix(in srgb, #0ea5e9 10%, var(--bg-primary)));
+  &::before { background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.06) 50%, transparent 70%); }
+}
+@keyframes bw-vibe-sweep { 0%, 55% { transform: translateX(-100%); } 85%, 100% { transform: translateX(100%); } }
+.bw-vibe-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f472b6;
+  box-shadow: 0 0 0 0 rgba(244, 114, 182, 0.7);
+  animation: bw-vibe-pulse 1.8s ease-out infinite;
+}
+@keyframes bw-vibe-pulse { 70% { box-shadow: 0 0 0 7px rgba(244, 114, 182, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 114, 182, 0); } }
+.bw-vibe-cta {
+  color: var(--accent-solid-fg);
+  background: var(--accent-solid);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+[data-theme='dark'] .bw-vibe-cta { color: #0e1219; background: #eef0f4; }
+.bw-vibe-banner a:hover .bw-vibe-cta { transform: translateX(2px); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+// The "Vibe-coded" pill (banner, project card, Saarthi page): a glossy gradient with a slow shine
 .bw-vibe-tag {
+  position: relative;
   color: #fff;
-  background: linear-gradient(90deg, #ec4899, #8b5cf6, #0ea5e9);
-  background-size: 200% 100%;
-  animation: bw-vibe-shine 4s linear infinite;
+  background: linear-gradient(90deg, #ec4899, #8b5cf6, #0ea5e9, #ec4899);
+  background-size: 300% 100%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 2px 10px -2px rgba(139, 92, 246, 0.55);
+  text-shadow: 0 1px 1px rgba(40, 10, 80, 0.25);
+  animation: bw-vibe-shine 6s linear infinite;
 }
-@keyframes bw-vibe-shine { to { background-position: -200% 0; } }
-@media (prefers-reduced-motion: reduce) { .bw-vibe-tag { animation: none; } }
+// dark mode: lighter, green-led gradient with dark text so it stands apart
+[data-theme='dark'] .bw-vibe-tag {
+  color: #052e16;
+  text-shadow: none;
+  background: linear-gradient(90deg, #86efac, #67e8f9, #c4b5fd, #86efac);
+  background-size: 300% 100%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 0 14px rgba(134, 239, 172, 0.4);
+}
+@keyframes bw-vibe-shine { to { background-position: -300% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .bw-vibe-banner::before, .bw-vibe-dot, .bw-vibe-tag { animation: none; }
+}

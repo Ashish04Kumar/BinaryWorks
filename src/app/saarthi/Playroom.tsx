@@ -5,6 +5,7 @@
 // 3 min / 15 min, and break, lunch and breathing are shortened, so you can see everything in a minute.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SPRITES, type SpriteState } from "./sprites";
+import Sprite from "./Sprite";
 import { line, type Lang } from "./lines";
 
 const DISPLAY = 190; // css px for the character
@@ -25,39 +26,6 @@ type Session =
 const now = () => performance.now() / 1000;
 const SAMPLE_REMINDERS = ["Paani peena 💧", "Stand-up call at 11", "Push the release branch", "Mom ko call karna 📞"];
 
-// ---------------------------------------------------------------- sprite
-function Sprite({ state, flip }: { state: SpriteState; flip: boolean }) {
-  const el = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const s = SPRITES[state];
-    const start = performance.now();
-    let raf = 0;
-    const tick = (t: number) => {
-      let f = Math.floor(((t - start) / 1000) * s.fps);
-      f = s.loop ? f % s.frames : Math.min(f, s.frames - 1);
-      if (el.current) el.current.style.backgroundPosition = `${-f * DISPLAY}px 0`;
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [state]);
-  const s = SPRITES[state];
-  return (
-    <div
-      ref={el}
-      aria-hidden
-      style={{
-        width: DISPLAY,
-        height: DISPLAY,
-        backgroundImage: `url(/saarthi/sprites/${state}.webp)`,
-        backgroundSize: `${s.frames * DISPLAY}px ${DISPLAY}px`,
-        backgroundRepeat: "no-repeat",
-        transform: flip ? "scaleX(-1)" : undefined,
-      }}
-    />
-  );
-}
-
 // ---------------------------------------------------------------- playroom
 export default function Playroom() {
   const [state, setState] = useState<SpriteState>("idle");
@@ -73,6 +41,13 @@ export default function Playroom() {
   const [tally, setTally] = useState({ done: 0, skipped: 0 });
   const [diag, setDiag] = useState({ kps: 0, sps: 0, idle: 0, session: "" });
   const [status, setStatus] = useState<"working" | "break" | "lunch">("working");
+  const [clock, setClock] = useState("");
+  useEffect(() => {
+    const fmt = () => setClock(new Date().toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).replace(",", ""));
+    fmt();
+    const id = setInterval(fmt, 20_000);
+    return () => clearInterval(id);
+  }, []);
 
   // live values the loop reads without re-subscribing
   const r = useRef({
@@ -201,7 +176,7 @@ export default function Playroom() {
           } else if (target === R.state) {
             R.candidate = null;
             // idle for a while: maybe go for a walk, or say something
-            if (target === "idle" && R.walking && t - R.entered > 7 && Math.random() < 0.02) {
+            if (target === "idle" && R.walking && t - R.entered > 4 && Math.random() < 0.05) {
               R.walkTarget = 0.12 + Math.random() * 0.76;
               setFlip(R.walkTarget < R.x);
               enter("walk");
@@ -292,6 +267,30 @@ export default function Playroom() {
     if (R.quiet) setBubble(null);
   };
 
+  // a stroll across the screen, to the far side
+  const walkNow = () => {
+    const R = r.current;
+    touch();
+    if (R.session) return;
+    R.walkTarget = R.x < 0.5 ? 0.72 + Math.random() * 0.25 : 0.03 + Math.random() * 0.25;
+    setFlip(R.walkTarget < R.x);
+    enter("walk");
+  };
+
+  // walking mode: turning it on starts a stroll right away; turning it off stops it
+  const toggleWalking = () => {
+    const R = r.current;
+    const next = !R.walking;
+    R.walking = next;
+    setWalking(next);
+    if (next && R.state !== "walk") walkNow();
+    else if (!next && R.state === "walk") {
+      R.walkTarget = null;
+      setFlip(false);
+      enter("idle");
+    }
+  };
+
   const stretch = () => { touch(); if (!r.current.session) { enter("stretch", TRANSIENT.stretch); say("stretch"); } };
 
   // ------------------------------------------------ render
@@ -301,49 +300,97 @@ export default function Playroom() {
 
   return (
     <div className="grid lg:grid-cols-[1fr_380px] gap-4" onPointerMove={touch}>
-      {/* stage */}
-      <div className="relative rounded-2xl border bw-rule overflow-hidden h-[440px] sm:h-[480px] lg:sticky lg:top-24 self-start sr-stage">
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2 z-10 text-[11px] font-mono">
-          <span className="px-2 py-1 rounded-md theme-bg-card border bw-rule">mood: <b className="bw-accent">{state}</b></span>
-          {diag.session && <span className="px-2 py-1 rounded-md theme-bg-card border bw-rule">{diag.session}</span>}
-          {quiet && <span className="px-2 py-1 rounded-md theme-bg-card border bw-rule">🤫 quiet</span>}
-        </div>
+      {/* stage: an Ubuntu laptop, with Saarthi living on its desktop */}
+      <div className="lg:sticky lg:top-24 self-start">
+        <div className="sr-laptop">
+          <div className="sr-screen relative overflow-hidden h-[400px] sm:h-[450px]">
+            {/* GNOME top bar */}
+            <div className="sr-topbar absolute inset-x-0 top-0 h-[26px] z-30 flex items-center px-3 text-[11.5px] text-white/90">
+              <span className="font-semibold">Activities</span>
+              <span className="absolute left-1/2 -translate-x-1/2 font-semibold">{clock}</span>
+              <span className="ml-auto flex items-center gap-2.5">
+                <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-[1px] font-mono text-[10.5px]">
+                  🙂 {state}{diag.session ? ` · ${diag.session}` : ""}{quiet ? " · 🤫" : ""}
+                </span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0" /><circle cx="12" cy="19.5" r="1.2" fill="currentColor" /></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z" /><path d="M16 9a4 4 0 010 6" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
+                <svg width="18" height="13" viewBox="0 0 28 14" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="1" y="1.5" width="22" height="11" rx="2.5" /><rect x="3.5" y="4" width="14" height="6" rx="1" fill="currentColor" stroke="none" /><path d="M25 5.5v3" strokeWidth="2.2" /></svg>
+              </span>
+            </div>
 
-        {/* reminder card */}
-        {reminder && (
-          <div className="absolute right-4 top-4 z-20 w-[250px] rounded-xl theme-bg-card border bw-rule shadow-[var(--shadow-float)] p-3 text-[13px] sr-pop">
-            <div className="font-mono text-[10.5px] bw-muted uppercase tracking-wider">⏰ Reminder</div>
-            <div className="font-semibold mt-1">{reminder}</div>
-            <div className="flex gap-1.5 mt-3">
-              <button className={`${btn} !px-2 !py-1`} onClick={() => answerReminder(true)}>✓ Done</button>
-              <button className={`${btn} !px-2 !py-1`} onClick={() => answerReminder(false)}>✗ Skipped</button>
-              <button className={`${btn} !px-2 !py-1`} onClick={() => answerReminder(null)}>10 min</button>
+            {/* dock */}
+            <div className="sr-dock absolute left-0 top-[26px] bottom-0 w-[50px] z-20 flex flex-col items-center gap-2 py-3">
+              {[
+                ["🦊", "#ff7139"],
+                ["📁", "#7b8794"],
+                ["›_", "#2c001e"],
+                ["‹›", "#1f7ad6"],
+                ["⚙", "#5e5e66"],
+              ].map(([ic, bg], i) => (
+                <span key={i} className="grid place-items-center w-[34px] h-[34px] rounded-[9px] text-[15px] font-bold text-white shadow-sm" style={{ background: bg }}>{ic}</span>
+              ))}
+              <span className="relative grid place-items-center w-[34px] h-[34px] rounded-[9px] overflow-hidden bg-[#fde68a] shadow-sm" title="Saarthi (running)">
+                <span style={{ width: 34, height: 34, backgroundImage: "url(/saarthi/sprites/idle.webp)", backgroundSize: `${SPRITES.idle.frames * 34}px 34px` }} />
+                <span className="absolute -left-[7px] top-1/2 -mt-[3px] w-[5px] h-[5px] rounded-full bg-[#e95420]" />
+              </span>
+              <span className="mt-auto grid grid-cols-3 gap-[3px] opacity-80">
+                {Array.from({ length: 9 }, (_, i) => <i key={i} className="block w-[4px] h-[4px] rounded-full bg-white" />)}
+              </span>
+            </div>
+
+            {/* desktop: a terminal in the back, then Saarthi */}
+            <div className="absolute left-[50px] right-0 top-[26px] bottom-0">
+              <div className="sr-term absolute left-[6%] top-[9%] w-[min(330px,62%)] rounded-[10px] overflow-hidden text-[11.5px] font-mono">
+                <div className="flex items-center h-[26px] px-3 bg-[#2b2b2b] text-white/80 text-[11px] font-sans">
+                  <span className="mx-auto">ashish@ubuntu: ~</span>
+                  <span className="flex gap-1.5">{["#5f5f5f", "#5f5f5f", "#e95420"].map((c, i) => <i key={i} className="block w-[11px] h-[11px] rounded-full" style={{ background: c }} />)}</span>
+                </div>
+                <div className="px-3 py-2.5 leading-[1.55] text-[#e7e3df] bg-[#300a24]/95">
+                  <div><span className="text-[#8ae234]">ashish@ubuntu</span>:<span className="text-[#729fcf]">~</span>$ saarthi</div>
+                  <div className="text-white/70">Saarthi is running · skin: Saarthi (3D)</div>
+                  <div className="text-white/70">typing: evdev · media: MPRIS · walking: {walking ? "on" : "off"}</div>
+                  <div><span className="text-[#8ae234]">ashish@ubuntu</span>:<span className="text-[#729fcf]">~</span>$ <span className="sr-caret">▍</span></div>
+                </div>
+              </div>
+
+              {/* reminder card */}
+              {reminder && (
+                <div className="absolute right-3 top-3 z-20 w-[250px] rounded-xl bg-white text-[#1b1b1f] shadow-xl p-3 text-[13px] sr-pop">
+                  <div className="font-mono text-[10.5px] text-black/50 uppercase tracking-wider">⏰ Reminder</div>
+                  <div className="font-semibold mt-1">{reminder}</div>
+                  <div className="flex gap-1.5 mt-3">
+                    {[["✓ Done", true], ["✗ Skipped", false], ["10 min", null]].map(([label, v]) => (
+                      <button key={String(label)} className="px-2 py-1 rounded-lg border border-black/10 hover:bg-black/5 text-[12.5px] cursor-pointer" onClick={() => answerReminder(v as boolean | null)}>{label as string}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* character + bubble */}
+              <div
+                className="absolute bottom-0 transition-[left] duration-150 ease-linear z-10"
+                style={{ left: quiet ? `calc(100% - ${DISPLAY * 0.55}px - 8px)` : left, transform: quiet ? "scale(.55)" : undefined, transformOrigin: "bottom right" }}
+              >
+                {bubble && !quiet && (
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-[calc(100%-6px)] w-max max-w-[250px] px-3.5 py-2 rounded-2xl bg-white text-[#1b1b1f] shadow-xl text-[13.5px] leading-snug text-center sr-pop" key={bubble}>
+                    {bubble}
+                    <span className="absolute left-1/2 -bottom-[6px] -ml-[6px] w-3 h-3 rotate-45 bg-white" />
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={pokeCharacter}
+                  aria-label="Saarthi: click the head to poke, the body to tickle"
+                  className={`block cursor-pointer select-none ${dizzy ? "sr-dizzy" : ""}`}
+                >
+                  <Sprite state={state} flip={flip} size={DISPLAY} />
+                </button>
+              </div>
             </div>
           </div>
-        )}
-
-        {/* character + bubble */}
-        <div
-          className="absolute bottom-[34px] transition-[left] duration-150 ease-linear"
-          style={{ left: quiet ? `calc(100% - ${DISPLAY * 0.55}px - 10px)` : left, transform: quiet ? "scale(.55)" : undefined, transformOrigin: "bottom right" }}
-        >
-          {bubble && !quiet && (
-            <div className="absolute left-1/2 -translate-x-1/2 bottom-[calc(100%-6px)] w-max max-w-[260px] px-3.5 py-2 rounded-2xl theme-bg-card border bw-rule shadow-[var(--shadow-float)] text-[13.5px] leading-snug text-center sr-pop" key={bubble}>
-              {bubble}
-              <span className="absolute left-1/2 -bottom-[7px] -ml-[7px] w-3.5 h-3.5 rotate-45 theme-bg-card border-r border-b bw-rule" />
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={pokeCharacter}
-            aria-label="Saarthi: click the head to poke, the body to tickle"
-            className={`block cursor-pointer select-none ${dizzy ? "sr-dizzy" : ""}`}
-          >
-            <Sprite state={state} flip={flip} />
-          </button>
         </div>
-        <div className="absolute left-0 right-0 bottom-0 h-[34px] sr-floor" />
-        <p className="absolute left-4 bottom-2 text-[11px] font-mono bw-muted z-10">click head = poke · body = tickle · 4 fast clicks = dizzy</p>
+        <div className="sr-base" aria-hidden><span /></div>
+        <p className="mt-3 text-center text-[11.5px] font-mono bw-muted">click head = poke · body = tickle · 4 fast clicks = dizzy</p>
       </div>
 
       {/* controls */}
@@ -377,6 +424,7 @@ export default function Playroom() {
             <button className={`${btn} ${status === "lunch" ? on : ""}`} onClick={() => setWorkStatus("lunch")}>🍱 Lunch</button>
             <button className={btn} onClick={breathe}>🧘 Breathe</button>
             <button className={btn} onClick={stretch}>🙆 Stretch</button>
+            <button className={btn} onClick={walkNow}>🚶 Walk</button>
             <button className={btn} onClick={fireReminder}>⏰ Reminder</button>
           </div>
           <p className="text-[11.5px] bw-muted mt-2">Is hafte: {tally.done} ✓ kiya · {tally.skipped} ✗ nahi kiya</p>
@@ -385,7 +433,7 @@ export default function Playroom() {
         <div className="rounded-2xl border bw-rule theme-bg-card p-4">
           <div className="font-mono text-[11px] bw-muted uppercase tracking-wider mb-2">3 · Settings</div>
           <div className="flex flex-wrap gap-1.5">
-            <button className={`${btn} ${walking ? on : ""}`} onClick={() => setWalking((w) => !w)}>🚶 Walking {walking ? "on" : "off"}</button>
+            <button className={`${btn} ${walking ? on : ""}`} onClick={toggleWalking}>🚶 Walking mode: {walking ? "on" : "off"}</button>
             <button className={`${btn} ${quiet ? on : ""}`} onClick={toggleQuiet}>🤫 Quiet mode</button>
             <button className={btn} onClick={() => setLang((l) => (l === "hinglish" ? "en" : "hinglish"))}>🗣 {lang === "hinglish" ? "Hinglish" : "English"}</button>
           </div>
