@@ -14,6 +14,8 @@ export type ProjectItem = {
   liveClient?: string;
   // Link to a live demo on this site (e.g. "/#glitch")
   demo?: string;
+  // Built mostly by directing an AI coding agent; shown with a "Vibe-coded" badge
+  vibeCoded?: boolean;
 };
 
 export const projects: ProjectItem[] = [
@@ -35,6 +37,22 @@ export const projects: ProjectItem[] = [
     category: "my",
     live: "https://scholarlens.duckdns.org/",
     demo: "/#scholarlens",
+  },
+  {
+    title: "Saarthi: Animated Desktop Companion",
+    description: `<p>A desktop companion that lives on your screen and reacts to what you do: it sweats when you type fast, ponders when you slow down, grabs popcorn for tutorials and falls asleep when you walk away.</p>
+<ul>
+<li><strong>Knows your activity:</strong> typing speed, scrolling, videos and music, away and asleep, from a small unit-tested state machine. Counts how fast you type, never what.</li>
+<li><strong>Looks after you:</strong> break and lunch modes, guided breathing, stretch and water nudges, reminders with done/skipped tracking, notes and a synced calendar.</li>
+<li><strong>Your day:</strong> morning brief, weather with outfits and rain warnings, and the traffic home before logout.</li>
+<li><strong>Vibe-coded:</strong> I directed an AI coding agent, designed the character and behaviour, and tested it daily; the AI wrote most of the code.</li>
+</ul>`,
+    tech: ["Python", "PySide6 (Qt)", "evdev / pynput", "D-Bus MPRIS / WinRT", "iCalendar", "pytest", "Claude Code"],
+    image: "/assets/projects/personal/saarthi/cover.webp",
+    category: "my",
+    github: "https://github.com/Ashish04Kumar/saarthi",
+    demo: "/saarthi",
+    vibeCoded: true,
   },
   {
     title: "Smart RAG Chatbot Platform",

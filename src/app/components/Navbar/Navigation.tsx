@@ -74,7 +74,7 @@ const Navigation = () => {
   }, [pathname]);
 
   return (
-    <div className="sticky top-0 z-50 px-3 sm:px-4 pt-3">
+    <div className="sticky top-[var(--banner-h,0px)] z-50 px-3 sm:px-4 pt-3">
       <nav className={`bw-nav relative mx-auto flex items-center justify-between h-14 pl-2 pr-2 sm:pl-2.5 rounded-full border bw-rule theme-bg-nav backdrop-blur-xl backdrop-saturate-150 shadow-[var(--shadow-float)] ${compact ? "is-compact" : ""}`}>
         <Link href="/" data-nav-left aria-label="Ashish Kumar, home" className="group relative z-10 flex items-center gap-2.5 font-semibold tracking-tight theme-text-primary">
           <span ref={eyes} className="bw-nav-eyes relative grid place-items-center w-10 h-10 rounded-full" aria-hidden>

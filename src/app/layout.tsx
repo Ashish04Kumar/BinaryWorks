@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "../styles/main.scss";
 import { ThemeProvider } from "./providers/theme-provider";
 import Navigation from "./components/Navbar/Navigation";
+import VibeBanner from "./components/VibeBanner";
 import Footer from "./components/Footer";
 import SmoothScroll from "./components/ui/SmoothScroll";
 import SiteChrome from "./components/SiteChrome";
@@ -53,6 +54,7 @@ export default function RootLayout({
           <SmoothScroll />
           <Tracker />
           <SiteChrome>
+            <VibeBanner />
             <Navigation />
           </SiteChrome>
           {children}

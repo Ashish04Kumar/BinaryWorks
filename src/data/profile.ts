@@ -154,6 +154,7 @@ export const certifications = [
 
 // Projects shown on the home page, in order. `title` must match src/data/projects.ts.
 export const featuredProjects = [
+  { title: "Saarthi: Animated Desktop Companion", label: "Saarthi (vibe-coded)" },
   { title: "Smart RAG Chatbot Platform", label: "RAG Chatbot Platform" },
   { title: "Hilux Booking Portal for Toyota GB", label: "Toyota GB Hilux Booking Portal" },
   { title: "Fund Management Dashboard for UAE Ministry", label: "UAE Ministry Fund Management" },
