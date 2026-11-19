@@ -699,3 +699,19 @@ a:hover > .bw-nav-eyes i { animation-duration: 1.4s; } // a quick double-take wh
 @keyframes bw-bot-step { 50% { height: 1.5px; } }
 @keyframes bw-bot-bob { 50% { translate: 0 -0.7px; } }
 @keyframes bw-bot-hop { 40% { translate: 0 -6px; } 100% { translate: 0 0; } }
+
+// Site banner for Saarthi (vibe-coded): soft gradient strip above the navbar
+.bw-vibe-banner {
+  color: var(--text-primary);
+  background: linear-gradient(90deg, color-mix(in srgb, #f472b6 16%, var(--bg-primary)), color-mix(in srgb, #a78bfa 18%, var(--bg-primary)), color-mix(in srgb, #38bdf8 16%, var(--bg-primary)));
+  border-bottom: 1px solid var(--border-color);
+}
+.bw-vibe-banner a:hover .underline { text-decoration-thickness: 2px; }
+.bw-vibe-tag {
+  color: #fff;
+  background: linear-gradient(90deg, #ec4899, #8b5cf6, #0ea5e9);
+  background-size: 200% 100%;
+  animation: bw-vibe-shine 4s linear infinite;
+}
+@keyframes bw-vibe-shine { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .bw-vibe-tag { animation: none; } }

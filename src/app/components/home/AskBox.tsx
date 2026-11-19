@@ -11,7 +11,7 @@ const routes: Route[] = [
     question: "What do you build?",
     keywords: ["build", "project", "made", "work on", "dashboard", "portfolio"],
     answer:
-      "At work: a RAG chatbot platform that answers from a company's documents, a Hilux booking portal for Toyota GB, a budget system for a UAE ministry, a live shooting-range system that detects and scores every shot from camera feeds and a team chat tool. On my own: AI projects like Glitch and ScholarLens.",
+      "At work: a RAG chatbot platform that answers from a company's documents, a Hilux booking portal for Toyota GB, a budget system for a UAE ministry, a live shooting-range system that detects and scores every shot from camera feeds and a team chat tool. On my own: AI projects like Glitch and ScholarLens, and Saarthi, a vibe-coded animated desktop companion.",
   },
   {
     node: "frontend",

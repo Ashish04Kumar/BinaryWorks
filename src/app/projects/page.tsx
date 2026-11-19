@@ -89,6 +89,11 @@ const Projects = async ({ searchParams }: any) => {
                 <p className="font-mono text-xs bw-muted mb-3">
                   <span className="bw-accent">{String(index + 1).padStart(2, "0")}</span> ·{" "}
                   {project.category === "my" ? "personal" : "work"}
+                  {project.vibeCoded && (
+                    <Link href="/saarthi" className="bw-vibe-tag ml-2 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase align-middle">
+                      ✨ Vibe-coded
+                    </Link>
+                  )}
                 </p>
                 <h2 className="text-xl md:text-3xl font-semibold tracking-tight mb-3 md:mb-4">
                   {project.title}
