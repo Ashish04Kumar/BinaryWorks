@@ -8,7 +8,8 @@ import { SPRITES, type SpriteState } from "./sprites";
 import Sprite from "./Sprite";
 import { line, type Lang } from "./lines";
 
-const DISPLAY = 190; // css px for the character
+const DISPLAY = 190; // css px for the character (desktop)
+const DISPLAY_SMALL = 116; // on phones
 const TH = { fast: 4, slow: 0.3, scroll: 0.8, afk: 20, sleep: 40, hold: 1.2, videoTyping: 1 };
 const TRANSIENT: Partial<Record<SpriteState, number>> = { waking: 2.5, happy: 2.5, stretch: 6, alert: 8, poked: 1.6, giggle: 2 };
 const RESTING: SpriteState[] = ["afk", "sleeping"];
@@ -42,6 +43,14 @@ export default function Playroom() {
   const [diag, setDiag] = useState({ kps: 0, sps: 0, idle: 0, session: "" });
   const [status, setStatus] = useState<"working" | "break" | "lunch">("working");
   const [clock, setClock] = useState("");
+  const [small, setSmall] = useState(false); // phone layout: smaller character, compact controls
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const set = () => setSmall(mq.matches);
+    set();
+    mq.addEventListener("change", set);
+    return () => mq.removeEventListener("change", set);
+  }, []);
   useEffect(() => {
     const fmt = () => setClock(new Date().toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).replace(",", ""));
     fmt();
@@ -296,20 +305,21 @@ export default function Playroom() {
   // ------------------------------------------------ render
   const btn = "px-3 py-1.5 rounded-lg border bw-rule text-[13px] bw-chip cursor-pointer";
   const on = "bw-accent bw-accent-border bw-tint";
-  const left = `calc((100% - ${DISPLAY}px) * ${x.toFixed(4)})`; // keeps the character inside the stage
+  const size = small ? DISPLAY_SMALL : DISPLAY;
+  const left = `calc((100% - ${size}px) * ${x.toFixed(4)})`; // keeps the character inside the stage
 
   return (
     <div className="grid lg:grid-cols-[1fr_380px] gap-4" onPointerMove={touch}>
       {/* stage: an Ubuntu laptop, with Saarthi living on its desktop */}
-      <div className="lg:sticky lg:top-24 self-start">
+      <div className="sticky top-[72px] z-20 lg:top-24 self-start">
         <div className="sr-laptop">
-          <div className="sr-screen relative overflow-hidden h-[400px] sm:h-[450px]">
+          <div className="sr-screen relative overflow-hidden h-[230px] sm:h-[400px] lg:h-[450px]">
             {/* GNOME top bar */}
             <div className="sr-topbar absolute inset-x-0 top-0 h-[26px] z-30 flex items-center px-3 text-[11.5px] text-white/90">
               <span className="font-semibold">Activities</span>
-              <span className="absolute left-1/2 -translate-x-1/2 font-semibold">{clock}</span>
+              <span className="hidden sm:block absolute left-1/2 -translate-x-1/2 font-semibold">{clock}</span>
               <span className="ml-auto flex items-center gap-2.5">
-                <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-[1px] font-mono text-[10.5px]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-[1px] font-mono text-[10.5px] max-w-[190px] sm:max-w-none truncate">
                   🙂 {state}{diag.session ? ` · ${diag.session}` : ""}{quiet ? " · 🤫" : ""}
                 </span>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0" /><circle cx="12" cy="19.5" r="1.2" fill="currentColor" /></svg>
@@ -319,7 +329,7 @@ export default function Playroom() {
             </div>
 
             {/* dock */}
-            <div className="sr-dock absolute left-0 top-[26px] bottom-0 w-[50px] z-20 flex flex-col items-center gap-2 py-3">
+            <div className="sr-dock absolute left-0 top-[26px] bottom-0 w-[50px] z-20 hidden sm:flex flex-col items-center gap-2 py-3">
               {[
                 ["🦊", "#ff7139"],
                 ["📁", "#7b8794"],
@@ -339,8 +349,8 @@ export default function Playroom() {
             </div>
 
             {/* desktop: a terminal in the back, then Saarthi */}
-            <div className="absolute left-[50px] right-0 top-[26px] bottom-0">
-              <div className="sr-term absolute left-[6%] top-[9%] w-[min(330px,62%)] rounded-[10px] overflow-hidden text-[11.5px] font-mono">
+            <div className="absolute left-0 sm:left-[50px] right-0 top-[26px] bottom-0">
+              <div className="sr-term absolute hidden sm:block left-[6%] top-[9%] w-[min(330px,62%)] rounded-[10px] overflow-hidden text-[11.5px] font-mono">
                 <div className="flex items-center h-[26px] px-3 bg-[#2b2b2b] text-white/80 text-[11px] font-sans">
                   <span className="mx-auto">ashish@ubuntu: ~</span>
                   <span className="flex gap-1.5">{["#5f5f5f", "#5f5f5f", "#e95420"].map((c, i) => <i key={i} className="block w-[11px] h-[11px] rounded-full" style={{ background: c }} />)}</span>
@@ -369,10 +379,10 @@ export default function Playroom() {
               {/* character + bubble */}
               <div
                 className="absolute bottom-0 transition-[left] duration-150 ease-linear z-10"
-                style={{ left: quiet ? `calc(100% - ${DISPLAY * 0.55}px - 8px)` : left, transform: quiet ? "scale(.55)" : undefined, transformOrigin: "bottom right" }}
+                style={{ left: quiet ? `calc(100% - ${size * 0.55}px - 8px)` : left, transform: quiet ? "scale(.55)" : undefined, transformOrigin: "bottom right" }}
               >
                 {bubble && !quiet && (
-                  <div className="absolute left-1/2 -translate-x-1/2 bottom-[calc(100%-6px)] w-max max-w-[250px] px-3.5 py-2 rounded-2xl bg-white text-[#1b1b1f] shadow-xl text-[13.5px] leading-snug text-center sr-pop" key={bubble}>
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-[calc(100%-6px)] w-max max-w-[200px] sm:max-w-[250px] px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-2xl bg-white text-[#1b1b1f] shadow-xl text-[12.5px] sm:text-[13.5px] leading-snug text-center sr-pop" key={bubble}>
                     {bubble}
                     <span className="absolute left-1/2 -bottom-[6px] -ml-[6px] w-3 h-3 rotate-45 bg-white" />
                   </div>
@@ -383,31 +393,31 @@ export default function Playroom() {
                   aria-label="Saarthi: click the head to poke, the body to tickle"
                   className={`block cursor-pointer select-none ${dizzy ? "sr-dizzy" : ""}`}
                 >
-                  <Sprite state={state} flip={flip} size={DISPLAY} />
+                  <Sprite state={state} flip={flip} size={size} />
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div className="sr-base" aria-hidden><span /></div>
-        <p className="mt-3 text-center text-[11.5px] font-mono bw-muted">click head = poke · body = tickle · 4 fast clicks = dizzy</p>
+        <div className="sr-base hidden sm:block" aria-hidden><span /></div>
+        <p className="hidden sm:block mt-3 text-center text-[11.5px] font-mono bw-muted">click head = poke · body = tickle · 4 fast clicks = dizzy</p>
       </div>
 
       {/* controls */}
-      <div className="flex flex-col gap-3 text-sm">
-        <div className="rounded-2xl border bw-rule theme-bg-card p-4">
+      <div className="flex flex-col gap-2 sm:gap-3 text-sm">
+        <div className="rounded-2xl border bw-rule theme-bg-card p-3 sm:p-4">
           <div className="font-mono text-[11px] bw-muted uppercase tracking-wider mb-2">1 · Do something</div>
           <textarea
             onKeyDown={() => { r.current.keys.push(now()); touch(); }}
             placeholder="Type here: slow, then really fast…"
-            rows={2}
+            rows={small ? 1 : 2}
             className="w-full rounded-lg border bw-rule bg-transparent px-3 py-2 text-[13.5px] resize-none outline-none focus:border-[var(--accent-bright)]"
           />
           <div
             data-scroll-box
             onWheel={() => { r.current.scrolls.push(now()); touch(); }}
             onScroll={() => { r.current.scrolls.push(now()); touch(); }}
-            className="mt-2 h-[68px] overflow-y-auto rounded-lg border bw-rule px-3 py-2 text-[12.5px] bw-muted"
+            className="mt-2 h-[44px] sm:h-[68px] overflow-y-auto rounded-lg border bw-rule px-3 py-2 text-[12.5px] bw-muted"
           >
             {Array.from({ length: 24 }, (_, i) => <div key={i}>Scroll me · item {i + 1} of a long feed…</div>)}
           </div>
@@ -416,7 +426,7 @@ export default function Playroom() {
           </button>
         </div>
 
-        <div className="rounded-2xl border bw-rule theme-bg-card p-4">
+        <div className="rounded-2xl border bw-rule theme-bg-card p-3 sm:p-4">
           <div className="font-mono text-[11px] bw-muted uppercase tracking-wider mb-2">2 · Status &amp; wellness</div>
           <div className="flex flex-wrap gap-1.5">
             <button className={`${btn} ${status === "working" ? on : ""}`} onClick={() => setWorkStatus("working")}>💻 Working</button>
@@ -430,7 +440,7 @@ export default function Playroom() {
           <p className="text-[11.5px] bw-muted mt-2">Is hafte: {tally.done} ✓ kiya · {tally.skipped} ✗ nahi kiya</p>
         </div>
 
-        <div className="rounded-2xl border bw-rule theme-bg-card p-4">
+        <div className="rounded-2xl border bw-rule theme-bg-card p-3 sm:p-4">
           <div className="font-mono text-[11px] bw-muted uppercase tracking-wider mb-2">3 · Settings</div>
           <div className="flex flex-wrap gap-1.5">
             <button className={`${btn} ${walking ? on : ""}`} onClick={toggleWalking}>🚶 Walking mode: {walking ? "on" : "off"}</button>
@@ -439,7 +449,7 @@ export default function Playroom() {
           </div>
         </div>
 
-        <div className="rounded-2xl border bw-rule theme-bg-card p-4 font-mono text-[12px]">
+        <div className="hidden sm:block rounded-2xl border bw-rule theme-bg-card p-4 font-mono text-[12px]">
           <div className="text-[11px] bw-muted uppercase tracking-wider mb-2">What I see…</div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1">
             <span className="bw-muted">Keys / sec</span><span>{diag.kps.toFixed(1)}</span>
